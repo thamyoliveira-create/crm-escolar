@@ -6,18 +6,35 @@ O sistema integra conceitos práticos de administração e finanças ao processo
 
 ---
 
-## 🚀 Como Executar
+## 🌐 Publicação Gratuita (Vercel & Supabase)
+
+O **CRM Escolar** está 100% pronto para publicação gratuita na **Vercel** conectado ao **Supabase** (PostgreSQL + Autenticação).
+
+👉 **[Consulte o Guia Passo a Passo de Implantação (DEPLOY_VERCEL_SUPABASE.md)](./DEPLOY_VERCEL_SUPABASE.md)**
+
+### Variáveis de Ambiente Necessárias na Vercel:
+| Variável | Descrição | Exemplo |
+| :--- | :--- | :--- |
+| `SUPABASE_URL` | URL do seu projeto Supabase | `https://xyzcompany.supabase.co` |
+| `SUPABASE_ANON_KEY` | Chave pública `anon` do Supabase | `eyJhbGciOi...` |
+
+*(Consulte o arquivo [`.env.example`](./.env.example) como referência).*
+
+> [!CAUTION]
+> **Segurança:** Use apenas a chave pública `anon`. **NUNCA** adicione a chave `service_role` (privada) no frontend ou na Vercel.
+
+---
+
+## 🚀 Como Executar Localmente
 
 O CRM Escolar foi construído com tecnologias web nativas e sem necessidade de etapas de compilação ou instalação de dependências (Zero Build).
 
 ### Opção 1: Diretamente no Navegador
-Basta abrir o arquivo [`index.html`](file:///Users/tamirisoul/.gemini/antigravity/scratch/crm-escolar/index.html) com dois cliques no seu navegador favorito (Google Chrome, Edge, Safari, Firefox).
+Basta abrir o arquivo [`index.html`](file:///Users/tamirisoul/.gemini/antigravity/scratch/crm-escolar/index.html) no seu navegador. Caso não configure o Supabase, o sistema utiliza o motor de armazenamento local automático (`localStorage`).
 
 ### Opção 2: Servidor Local (Recomendado)
-Para melhor suporte ao carregamento de ES Modules em alguns navegadores:
 ```bash
 # Com Python 3
-cd /Users/tamirisoul/.gemini/antigravity/scratch/crm-escolar
 python3 -m http.server 8000
 
 # Ou com Node.js (npx)
@@ -29,20 +46,10 @@ Acesse `http://localhost:8000` no seu navegador.
 
 ## 🔐 Autenticação com Google & Acesso Universal de Administrador
 
-O CRM Escolar suporta **Login com o Google** com perfil de **Administrador para todos os usuários**.
+O CRM Escolar suporta **Login com o Google (OAuth)** e e-mail/senha com perfil de **Administrador para todos os usuários**.
 
-- **Entrar com o Google**: Clique em *"Continuar com o Google"* na tela de login para se autenticar instantaneamente com sua conta Google (ou escolher uma das contas disponíveis).
-- **Acesso Total (ADM)**: Qualquer usuário logado recebe automaticamente privilégios de **Administrador**, tendo acesso irrestrito a todos os módulos, equipes, projetos, relatórios, gestão de usuários e configurações.
-
-Você também pode acessar utilizando qualquer e-mail/senha ou as credenciais pré-configuradas:
-
-| Perfil / Conta | E-mail | Senha | Acesso |
-| :--- | :--- | :--- | :--- |
-| **🌐 Login com Google** | `seu.nome@gmail.com` | *(1 clique)* | **👑 Administrador (Acesso Total)** |
-| **👑 Ana Administradora** | `admin@escola.edu` | `admin123` | **👑 Administrador (Acesso Total)** |
-| **👨‍🏫 Prof. Carlos Mendes** | `prof@escola.edu` | `prof123` | **👑 Administrador (Acesso Total)** |
-| **🎒 Beatriz (Eco Bags)** | `ecos@escola.edu` | `est123` | **👑 Administrador (Acesso Total)** |
-| **🌱 Diego (Horta)** | `horta@escola.edu` | `est123` | **👑 Administrador (Acesso Total)** |
+- **Entrar com o Google**: Autenticação oficial e segura via Supabase Google OAuth.
+- **Acesso Total (ADM)**: Qualquer usuário autenticado recebe automaticamente perfil de **Administrador**, tendo acesso irrestrito a todos os módulos, equipes, projetos, relatórios, gestão de usuários e configurações.
 
 ---
 

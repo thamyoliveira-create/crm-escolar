@@ -9,6 +9,7 @@
   <meta name="theme-color" content="#1e3a5f">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="styles.css">
   <script>
     tailwind.config = { theme: { extend: { colors: {
@@ -182,14 +183,19 @@
   </div>
 
   <script type="module">
-    import { auth } from './db.js';
-    import { loginWithGoogle } from './auth.js';
+    import { auth, initDatabase, isUsingRealSupabase } from './db.js';
+    import { login, loginWithGoogle } from './auth.js';
 
-    // Verificar sessão existente
-    try {
-      const { data } = auth.getSession();
-      if (data && data.session) window.location.href = 'app.html';
-    } catch(e) {}
+    // Inicializar DB e verificar sessão existente
+    (async () => {
+      try {
+        await initDatabase();
+        const { data } = await auth.getSession();
+        if (data && data.session) {
+          window.location.href = 'app.html';
+        }
+      } catch(e) {}
+    })();
 
     const form       = document.getElementById('login-form');
     const emailEl    = document.getElementById('email');
@@ -205,8 +211,19 @@
     const btnGoogleLogin = document.getElementById('btn-google-login');
     const closeGoogleModal = document.getElementById('close-google-modal');
 
-    btnGoogleLogin.addEventListener('click', () => {
-      googleModal.classList.remove('hidden');
+    btnGoogleLogin.addEventListener('click', async () => {
+      await initDatabase();
+      if (isUsingRealSupabase()) {
+        // Supabase Real: Redirecionar direto para o Google
+        try {
+          await loginWithGoogle();
+        } catch(err) {
+          alert('Erro ao iniciar login com Google: ' + err.message);
+        }
+      } else {
+        // Modo Local/Mock: Abrir modal para informar nome/email
+        googleModal.classList.remove('hidden');
+      }
     });
 
     closeGoogleModal.addEventListener('click', () => {
@@ -245,15 +262,10 @@
       loginIcon.className = 'fa-solid fa-circle-notch fa-spin';
       loginText.textContent = 'Entrando...';
       try {
-        const { data, error } = await auth.signInWithPassword({ email, password });
-        if (error) {
-          errorText.textContent = error.message || 'E-mail ou senha incorretos.';
-          errorDiv.classList.remove('hidden');
-        } else {
-          window.location.href = 'app.html';
-        }
+        await login(email, password);
+        window.location.href = 'app.html';
       } catch(err) {
-        errorText.textContent = 'Erro inesperado. Tente novamente.';
+        errorText.textContent = err.message || 'E-mail ou senha incorretos.';
         errorDiv.classList.remove('hidden');
       } finally {
         btnLogin.disabled = false;

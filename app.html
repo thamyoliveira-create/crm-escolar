@@ -8,6 +8,8 @@
   <meta name="theme-color" content="#1e3a5f">
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Chart.js -->
@@ -119,36 +121,30 @@
 
   <script type="module">
     import { initRouter, navigate } from './router.js';
-    import { auth } from './db.js';
+    import { auth, initDatabase } from './db.js';
+    import { syncSession, logout } from './auth.js';
 
     async function init() {
-      // Verificar autenticação
-      const { data: { session } } = auth.getSession();
-      if (!session) {
-        window.location.href = 'index.html';
-        return;
-      }
+      await initDatabase();
 
-      const profile = session.profile;
-      if (!profile) {
+      // Sincronizar e verificar autenticação
+      const user = await syncSession();
+      if (!user) {
         window.location.href = 'index.html';
         return;
       }
 
       // Atualizar UI com dados do usuário
-      const initial = (profile.nome || 'A').charAt(0).toUpperCase();
-      const isGoogle = session.provider === 'google';
+      const initial = (user.nome || user.email || 'A').charAt(0).toUpperCase();
 
-      document.getElementById('user-name').textContent = profile.nome || profile.email;
-      document.getElementById('user-role').innerHTML = isGoogle 
-        ? '<span class="inline-flex items-center gap-1"><i class="fa-brands fa-google text-xs text-amber-300"></i> Administrador</span>'
-        : 'Administrador';
+      document.getElementById('user-name').textContent = user.nome || user.email;
+      document.getElementById('user-role').innerHTML = 'Administrador';
       document.getElementById('user-avatar').textContent = initial;
       document.getElementById('mobile-avatar').textContent = initial;
       document.getElementById('desktop-avatar').textContent = initial;
       document.getElementById('header-user-info').innerHTML = `
         <span class="inline-flex items-center gap-1.5 font-medium">
-          ${profile.nome}
+          ${user.nome || user.email}
           <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
             <i class="fa-solid fa-shield-halved text-[10px] mr-0.5"></i> ADM
           </span>
@@ -197,8 +193,7 @@
 
       // Logout
       document.getElementById('logout-btn').addEventListener('click', async () => {
-        await auth.signOut();
-        window.location.href = 'index.html';
+        await logout();
       });
 
       // Inicializar roteador com acesso de administrador total
