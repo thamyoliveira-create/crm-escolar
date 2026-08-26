@@ -51,6 +51,25 @@ async function loadData() {
 
 function renderProdutos() {
     const container = document.getElementById('produtos-container');
+    if (!state.produtos || state.produtos.length === 0) {
+        container.innerHTML = `
+            <div class="bg-white rounded-xl border border-gray-200 p-12 text-center shadow-sm">
+                <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <h3 class="text-base font-bold text-gray-800 mb-1">Nenhum produto ou serviço cadastrado</h3>
+                <p class="text-xs text-gray-500 max-w-sm mx-auto mb-5">Cadastre o catálogo de itens que as equipes irão produzir ou comercializar durante o projeto escolar.</p>
+                <button id="btn-empty-novo-produto" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-4 rounded-lg transition-colors shadow-sm inline-flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Cadastrar Primeiro Produto
+                </button>
+            </div>
+        `;
+        document.getElementById('btn-empty-novo-produto')?.addEventListener('click', () => {
+            document.getElementById('btn-novo-produto')?.click();
+        });
+        return;
+    }
+
     if (state.viewMode === 'cards') {
         let html = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">';
         state.produtos.forEach(p => {
@@ -58,7 +77,7 @@ function renderProdutos() {
             html += `
                 <div class="bg-white rounded-lg shadow border p-4 cursor-pointer hover:shadow-lg transition" onclick="viewProduto('${p.id}')">
                     <div class="flex justify-between items-start mb-2">
-                        <span class="text-xs text-gray-500 uppercase">${p.tipo} - ${p.categoria}</span>
+                        <span class="text-xs text-gray-500 uppercase">${p.tipo} - ${p.categoria || 'Geral'}</span>
                         ${baixoEstoque ? '<span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Estoque Baixo</span>' : ''}
                     </div>
                     <h3 class="font-bold text-lg mb-2">${p.nome}</h3>

@@ -3,251 +3,205 @@ import { formatCurrency, formatDate } from '../utils.js';
 
 let chartInstances = {};
 
-export async function render() {
-  return `
+export async function render(container) {
+  container.innerHTML = `
     <div class="space-y-6">
-      <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800">Dashboard Gerencial</h1>
+          <p class="text-xs text-gray-500">Visão consolidada de indicadores financeiros e comerciais.</p>
+        </div>
       </div>
 
       <!-- Filtros -->
-      <div class="bg-white p-4 rounded-lg shadow space-y-4">
-        <h2 class="text-lg font-semibold text-gray-700">Filtros</h2>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-3">
+        <h2 class="text-xs font-bold text-gray-500 uppercase tracking-wider">Filtros de Período & Escopo</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Projeto</label>
-            <select id="filter-projeto" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Projeto</label>
+            <select id="filter-projeto" class="w-full border rounded-lg p-2 text-xs bg-white focus:ring-2 focus:ring-blue-500">
               <option value="">Todos os Projetos</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Equipe</label>
-            <select id="filter-equipe" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Equipe</label>
+            <select id="filter-equipe" class="w-full border rounded-lg p-2 text-xs bg-white focus:ring-2 focus:ring-blue-500">
               <option value="">Todas as Equipes</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Data Inicial</label>
-            <input type="date" id="filter-data-inicio" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Data Inicial</label>
+            <input type="date" id="filter-data-inicio" class="w-full border rounded-lg p-2 text-xs bg-white focus:ring-2 focus:ring-blue-500">
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Data Final</label>
-            <input type="date" id="filter-data-fim" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Data Final</label>
+            <input type="date" id="filter-data-fim" class="w-full border rounded-lg p-2 text-xs bg-white focus:ring-2 focus:ring-blue-500">
           </div>
         </div>
-        <div class="flex justify-end">
-          <button id="btn-aplicar-filtros" class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-            Aplicar Filtros
+        <div class="flex justify-end pt-1">
+          <button id="btn-aplicar-filtros" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-lg transition-colors shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-filter"></i> Aplicar Filtros
           </button>
         </div>
       </div>
 
-      <!-- Cards Linha 1 -->
-      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-          <div class="p-5">
-            <div class="flex items-center">
-              <div class="flex-shrink-0 bg-green-100 rounded-md p-3">
-                <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Faturamento Líquido</dt>
-                  <dd class="text-lg font-semibold text-gray-900" id="card-fat-liquido">R$ 0,00</dd>
-                </dl>
-              </div>
-            </div>
+      <!-- Indicadores Linha 1 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fa-solid fa-money-bill-trend-up"></i>
           </div>
-        </div>
-        
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-          <div class="p-5">
-            <div class="flex items-center">
-              <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
-                <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Total Recebido</dt>
-                  <dd class="text-lg font-semibold text-gray-900" id="card-recebido">R$ 0,00</dd>
-                </dl>
-              </div>
-            </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Faturamento Líquido</p>
+            <h3 class="text-lg font-extrabold text-gray-900 truncate" id="card-fat-liquido">R$ 0,00</h3>
           </div>
         </div>
 
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-          <div class="p-5">
-            <div class="flex items-center">
-              <div class="flex-shrink-0 bg-orange-100 rounded-md p-3">
-                <svg class="h-6 w-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Total a Receber</dt>
-                  <dd class="text-lg font-semibold text-gray-900" id="card-a-receber">R$ 0,00</dd>
-                </dl>
-              </div>
-            </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Total Recebido</p>
+            <h3 class="text-lg font-extrabold text-gray-900 truncate" id="card-recebido">R$ 0,00</h3>
           </div>
         </div>
 
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-          <div class="p-5">
-            <div class="flex items-center">
-              <div class="flex-shrink-0 bg-red-100 rounded-md p-3">
-                <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Custos Realizados</dt>
-                  <dd class="text-lg font-semibold text-gray-900" id="card-custos">R$ 0,00</dd>
-                </dl>
-              </div>
-            </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Total a Receber</p>
+            <h3 class="text-lg font-extrabold text-gray-900 truncate" id="card-a-receber">R$ 0,00</h3>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Custos Realizados</p>
+            <h3 class="text-lg font-extrabold text-gray-900 truncate" id="card-custos">R$ 0,00</h3>
           </div>
         </div>
       </div>
 
-      <!-- Cards Linha 2 -->
-      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-          <div class="p-5">
-            <div class="flex items-center">
-              <div class="flex-shrink-0 bg-gray-100 rounded-md p-3" id="icon-resultado-bg">
-                <svg class="h-6 w-6 text-gray-600" id="icon-resultado" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Resultado</dt>
-                  <dd class="text-lg font-semibold text-gray-900" id="card-resultado">R$ 0,00</dd>
-                </dl>
-              </div>
-            </div>
+      <!-- Indicadores Linha 2 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+          <div id="icon-resultado-bg" class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0">
+            <i id="icon-resultado" class="fa-solid fa-scale-balanced"></i>
           </div>
-        </div>
-        
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-          <div class="p-5">
-            <div class="flex items-center">
-              <div class="flex-shrink-0 bg-purple-100 rounded-md p-3">
-                <svg class="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Margem %</dt>
-                  <dd class="text-lg font-semibold text-gray-900" id="card-margem">0%</dd>
-                </dl>
-              </div>
-            </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Resultado / Lucro</p>
+            <h3 class="text-lg font-extrabold text-gray-900 truncate" id="card-resultado">R$ 0,00</h3>
           </div>
         </div>
 
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-          <div class="p-5">
-            <div class="flex items-center">
-              <div class="flex-shrink-0 bg-teal-100 rounded-md p-3">
-                <svg class="h-6 w-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Nº Vendas (Efetivadas)</dt>
-                  <dd class="text-lg font-semibold text-gray-900" id="card-num-vendas">0</dd>
-                </dl>
-              </div>
-            </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fa-solid fa-percent"></i>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Margem %</p>
+            <h3 class="text-lg font-extrabold text-gray-900 truncate" id="card-margem">0%</h3>
           </div>
         </div>
 
-        <div class="bg-white overflow-hidden shadow rounded-lg">
-          <div class="p-5">
-            <div class="flex items-center">
-              <div class="flex-shrink-0 bg-indigo-100 rounded-md p-3">
-                <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-              </div>
-              <div class="ml-5 w-0 flex-1">
-                <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">Ticket Médio</dt>
-                  <dd class="text-lg font-semibold text-gray-900" id="card-ticket-medio">R$ 0,00</dd>
-                </dl>
-              </div>
-            </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fa-solid fa-cart-shopping"></i>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Nº de Vendas</p>
+            <h3 class="text-lg font-extrabold text-gray-900 truncate" id="card-num-vendas">0</h3>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fa-solid fa-receipt"></i>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Ticket Médio</p>
+            <h3 class="text-lg font-extrabold text-gray-900 truncate" id="card-ticket-medio">R$ 0,00</h3>
           </div>
         </div>
       </div>
 
-      <!-- Alertas e Progresso -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Progresso da Meta (Faturamento vs Projetos Selecionados)</h3>
-          <div class="relative pt-1">
-            <div class="flex mb-2 items-center justify-between">
-              <div>
-                <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-indigo-600 bg-indigo-200">
-                  Progresso
-                </span>
-              </div>
-              <div class="text-right">
-                <span class="text-xs font-semibold inline-block text-indigo-600" id="meta-progresso-percent">
-                  0%
-                </span>
-              </div>
-            </div>
-            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-indigo-200">
-              <div id="meta-progresso-bar" style="width:0%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-500"></div>
-            </div>
-            <p class="text-sm text-gray-500 mt-2" id="meta-progresso-text">R$ 0,00 de R$ 0,00</p>
-          </div>
-        </div>
-
-        <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-lg font-medium text-red-700 mb-4 flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-            Alertas de Estoque
+      <!-- Alertas e Progresso de Meta -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Alertas de Estoque -->
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Alertas de Estoque Crítico
           </h3>
-          <ul id="lista-alertas-estoque" class="space-y-2 text-sm text-gray-600">
-            <li>Carregando alertas...</li>
+          <ul id="lista-alertas-estoque" class="text-xs text-gray-600 space-y-1.5">
+            <li>Nenhum produto cadastrado com estoque baixo.</li>
           </ul>
+        </div>
+
+        <!-- Meta de Faturamento -->
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-2">
+              <i class="fa-solid fa-bullseye text-blue-500"></i> Meta de Faturamento
+            </h3>
+            <span id="meta-progresso-percent" class="text-xs font-bold text-blue-600">0%</span>
+          </div>
+          <div class="w-full bg-gray-100 rounded-full h-3 mb-2 overflow-hidden">
+            <div id="meta-progresso-bar" class="bg-blue-600 h-3 rounded-full transition-all" style="width: 0%"></div>
+          </div>
+          <p id="meta-progresso-text" class="text-xs text-gray-500 text-right">R$ 0,00 de R$ 0,00</p>
         </div>
       </div>
 
       <!-- Gráficos -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Faturamento vs Custos</h3>
-          <canvas id="chart-fat-custos"></canvas>
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+          <h3 class="text-sm font-bold text-gray-800 mb-4">Faturamento vs. Custos Realizados</h3>
+          <div class="h-64">
+            <canvas id="chart-fat-custos"></canvas>
+          </div>
         </div>
-        <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Vendas por Produto/Serviço</h3>
-          <canvas id="chart-vendas-produto"></canvas>
+
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+          <h3 class="text-sm font-bold text-gray-800 mb-4">Vendas por Produto / Serviço</h3>
+          <div class="h-64 flex items-center justify-center">
+            <canvas id="chart-vendas-produto"></canvas>
+          </div>
         </div>
-        <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Custos por Categoria</h3>
-          <canvas id="chart-custos-categoria"></canvas>
+
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+          <h3 class="text-sm font-bold text-gray-800 mb-4">Custos por Categoria</h3>
+          <div class="h-64">
+            <canvas id="chart-custos-categoria"></canvas>
+          </div>
         </div>
-        <div class="bg-white p-4 rounded-lg shadow">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Resultado por Equipe</h3>
-          <canvas id="chart-resultado-equipe"></canvas>
-        </div>
-        <div class="bg-white p-4 rounded-lg shadow lg:col-span-2">
-          <h3 class="text-lg font-medium text-gray-900 mb-4 text-center">Formas de Pagamento (Vendas)</h3>
-          <div class="w-full max-w-md mx-auto">
+
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+          <h3 class="text-sm font-bold text-gray-800 mb-4">Formas de Pagamento Utilizadas</h3>
+          <div class="h-64 flex items-center justify-center">
             <canvas id="chart-formas-pagamento"></canvas>
           </div>
         </div>
       </div>
     </div>
   `;
+
+  await initDashboard();
 }
 
-export async function init() {
+async function initDashboard() {
   await loadFiltros();
   
-  document.getElementById('btn-aplicar-filtros').addEventListener('click', () => {
+  document.getElementById('btn-aplicar-filtros')?.addEventListener('click', () => {
     updateDashboard();
   });
   
-  document.getElementById('filter-projeto').addEventListener('change', async (e) => {
+  document.getElementById('filter-projeto')?.addEventListener('change', async (e) => {
     const projetoId = e.target.value;
     await updateEquipeOptions(projetoId);
   });
@@ -257,10 +211,10 @@ export async function init() {
 
 async function loadFiltros() {
   try {
-    const { data: projetos } = await db.projetos.list();
+    const { data: projetos } = await db.from('projetos');
     const selectProjeto = document.getElementById('filter-projeto');
     
-    if (projetos) {
+    if (selectProjeto && projetos) {
       projetos.forEach(p => {
         const option = document.createElement('option');
         option.value = p.id;
@@ -268,7 +222,6 @@ async function loadFiltros() {
         selectProjeto.appendChild(option);
       });
     }
-
     await updateEquipeOptions('');
   } catch (error) {
     console.error('Erro ao carregar filtros:', error);
@@ -277,16 +230,14 @@ async function loadFiltros() {
 
 async function updateEquipeOptions(projetoId) {
   try {
-    let equipes = [];
+    const { data: todasEquipes } = await db.from('equipes');
+    let equipes = todasEquipes || [];
     if (projetoId) {
-      const result = await db.equipes.listByProjeto(projetoId);
-      equipes = result.data || [];
-    } else {
-      const result = await db.equipes.list();
-      equipes = result.data || [];
+      equipes = equipes.filter(e => e.projeto_id === projetoId);
     }
 
     const selectEquipe = document.getElementById('filter-equipe');
+    if (!selectEquipe) return;
     selectEquipe.innerHTML = '<option value="">Todas as Equipes</option>';
     
     equipes.forEach(eq => {
@@ -302,45 +253,42 @@ async function updateEquipeOptions(projetoId) {
 
 async function updateDashboard() {
   try {
-    const projetoId = document.getElementById('filter-projeto').value;
-    const equipeId = document.getElementById('filter-equipe').value;
-    const dataInicio = document.getElementById('filter-data-inicio').value;
-    const dataFim = document.getElementById('filter-data-fim').value;
+    const projetoId = document.getElementById('filter-projeto')?.value || '';
+    const equipeId = document.getElementById('filter-equipe')?.value || '';
+    const dataInicio = document.getElementById('filter-data-inicio')?.value || '';
+    const dataFim = document.getElementById('filter-data-fim')?.value || '';
 
-    const { data: todasVendas } = await db.vendas.list();
-    const { data: todosItens } = await db.itensVenda.list();
-    const { data: todosRecebimentos } = await db.recebimentos.list();
-    const { data: todosCustos } = await db.custos.list();
-    const { data: produtos } = await db.produtos.list();
-    const { data: projetos } = await db.projetos.list();
-    const { data: categoriasCusto } = await db.categoriasCusto.list();
-    const { data: equipes } = await db.equipes.list();
+    const { data: todasVendas } = await db.from('vendas');
+    const { data: todosItens } = await db.from('itens_venda');
+    const { data: todosRecebimentos } = await db.from('recebimentos');
+    const { data: todosCustos } = await db.from('custos');
+    const { data: produtos } = await db.from('produtos');
+    const { data: projetos } = await db.from('projetos');
+    const { data: categoriasCusto } = await db.from('categorias_custo');
+    const { data: equipes } = await db.from('equipes');
 
     let vendas = todasVendas || [];
     let custos = todosCustos || [];
     
-    // Filtrar vendas
     vendas = vendas.filter(v => {
       if (projetoId && v.projeto_id !== projetoId) return false;
       if (equipeId && v.equipe_id !== equipeId) return false;
-      if (dataInicio && new Date(v.data_venda) < new Date(dataInicio)) return false;
-      if (dataFim && new Date(v.data_venda) > new Date(dataFim + 'T23:59:59')) return false;
+      if (dataInicio && v.data && v.data < dataInicio) return false;
+      if (dataFim && v.data && v.data > dataFim) return false;
       return true;
     });
 
     const vendasValidasIds = vendas.filter(v => v.situacao !== 'cancelada').map(v => v.id);
-    const vendasEfetivadasIds = vendas.filter(v => v.situacao !== 'cancelada' && v.situacao !== 'orcamento').map(v => v.id);
+    const vendasEfetivadas = vendas.filter(v => v.situacao !== 'cancelada' && v.situacao !== 'orcamento');
 
-    // Filtrar custos
     custos = custos.filter(c => {
       if (projetoId && c.projeto_id !== projetoId) return false;
       if (equipeId && c.equipe_id !== equipeId) return false;
-      if (dataInicio && new Date(c.data_despesa) < new Date(dataInicio)) return false;
-      if (dataFim && new Date(c.data_despesa) > new Date(dataFim + 'T23:59:59')) return false;
+      if (dataInicio && c.data && c.data < dataInicio) return false;
+      if (dataFim && c.data && c.data > dataFim) return false;
       return true;
     });
 
-    // Cálculos Financeiros
     let faturamentoBruto = 0;
     if (todosItens) {
       todosItens.forEach(item => {
@@ -357,12 +305,12 @@ async function updateDashboard() {
       }
     });
 
-    const faturamentoLiquido = faturamentoBruto - descontos;
+    const faturamentoLiquido = Math.max(0, faturamentoBruto - descontos);
 
     let recebido = 0;
     if (todosRecebimentos) {
       todosRecebimentos.forEach(r => {
-        if (vendasValidasIds.includes(r.venda_id) && r.situacao === 'pago') {
+        if (vendasValidasIds.includes(r.venda_id)) {
           recebido += Number(r.valor) || 0;
         }
       });
@@ -379,56 +327,60 @@ async function updateDashboard() {
 
     const resultado = faturamentoLiquido - custosRealizados;
     const margem = faturamentoLiquido > 0 ? (resultado / faturamentoLiquido) * 100 : null;
-    const numVendas = vendasEfetivadasIds.length;
+    const numVendas = vendasEfetivadas.length;
     const ticketMedio = numVendas > 0 ? faturamentoLiquido / numVendas : 0;
 
-    // Atualizar Cards
-    document.getElementById('card-fat-liquido').textContent = formatCurrency(faturamentoLiquido);
-    document.getElementById('card-recebido').textContent = formatCurrency(recebido);
-    document.getElementById('card-a-receber').textContent = formatCurrency(aReceber);
-    document.getElementById('card-custos').textContent = formatCurrency(custosRealizados);
-    
+    const elFat = document.getElementById('card-fat-liquido');
+    const elRec = document.getElementById('card-recebido');
+    const elARec = document.getElementById('card-a-receber');
+    const elCust = document.getElementById('card-custos');
     const cardResultado = document.getElementById('card-resultado');
     const iconResultadoBg = document.getElementById('icon-resultado-bg');
     const iconResultado = document.getElementById('icon-resultado');
+
+    if (elFat) elFat.textContent = formatCurrency(faturamentoLiquido);
+    if (elRec) elRec.textContent = formatCurrency(recebido);
+    if (elARec) elARec.textContent = formatCurrency(aReceber);
+    if (elCust) elCust.textContent = formatCurrency(custosRealizados);
     
-    cardResultado.textContent = formatCurrency(resultado);
-    if (resultado > 0) {
-      cardResultado.classList.replace('text-gray-900', 'text-green-600');
-      iconResultadoBg.className = 'flex-shrink-0 bg-green-100 rounded-md p-3';
-      iconResultado.className = 'h-6 w-6 text-green-600';
-    } else if (resultado < 0) {
-      cardResultado.classList.replace('text-gray-900', 'text-red-600');
-      iconResultadoBg.className = 'flex-shrink-0 bg-red-100 rounded-md p-3';
-      iconResultado.className = 'h-6 w-6 text-red-600';
-    } else {
-      cardResultado.classList.replace('text-green-600', 'text-gray-900');
-      cardResultado.classList.replace('text-red-600', 'text-gray-900');
-      iconResultadoBg.className = 'flex-shrink-0 bg-gray-100 rounded-md p-3';
-      iconResultado.className = 'h-6 w-6 text-gray-600';
+    if (cardResultado) {
+      cardResultado.textContent = formatCurrency(resultado);
+      if (resultado > 0) {
+        cardResultado.className = 'text-lg font-extrabold text-emerald-600 truncate';
+        if (iconResultadoBg) iconResultadoBg.className = 'w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0';
+      } else if (resultado < 0) {
+        cardResultado.className = 'text-lg font-extrabold text-red-600 truncate';
+        if (iconResultadoBg) iconResultadoBg.className = 'w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-xl flex-shrink-0';
+      } else {
+        cardResultado.className = 'text-lg font-extrabold text-gray-900 truncate';
+        if (iconResultadoBg) iconResultadoBg.className = 'w-12 h-12 rounded-xl bg-gray-50 text-gray-600 flex items-center justify-center text-xl flex-shrink-0';
+      }
     }
 
-    document.getElementById('card-margem').textContent = margem !== null ? margem.toFixed(2) + '%' : 'Não calculável';
-    document.getElementById('card-num-vendas').textContent = numVendas;
-    document.getElementById('card-ticket-medio').textContent = formatCurrency(ticketMedio);
+    const elMargem = document.getElementById('card-margem');
+    const elNumVendas = document.getElementById('card-num-vendas');
+    const elTicketMedio = document.getElementById('card-ticket-medio');
 
-    // Alertas de Estoque
+    if (elMargem) elMargem.textContent = margem !== null ? margem.toFixed(1) + '%' : '0%';
+    if (elNumVendas) elNumVendas.textContent = numVendas;
+    if (elTicketMedio) elTicketMedio.textContent = formatCurrency(ticketMedio);
+
     const alertasUl = document.getElementById('lista-alertas-estoque');
-    alertasUl.innerHTML = '';
-    const produtosBaixoEstoque = (produtos || []).filter(p => p.tipo === 'produto' && p.controlar_estoque && p.estoque_disponivel <= (p.estoque_minimo || 0));
-    
-    if (produtosBaixoEstoque.length === 0) {
-      alertasUl.innerHTML = '<li>Nenhum produto com estoque baixo.</li>';
-    } else {
-      produtosBaixoEstoque.forEach(p => {
-        alertasUl.innerHTML += `<li><strong>${p.nome}</strong>: ${p.estoque_disponivel} (Mín: ${p.estoque_minimo || 0})</li>`;
-      });
+    if (alertasUl) {
+      const produtosBaixoEstoque = (produtos || []).filter(p => p.tipo === 'produto' && p.estoque_disponivel <= (p.estoque_minimo || 0));
+      if (produtosBaixoEstoque.length === 0) {
+        alertasUl.innerHTML = '<li class="text-gray-400">Nenhum produto cadastrado com estoque crítico.</li>';
+      } else {
+        alertasUl.innerHTML = '';
+        produtosBaixoEstoque.forEach(p => {
+          alertasUl.innerHTML += `<li class="text-red-600 font-semibold"><i class="fa-solid fa-box-open mr-1"></i> ${p.nome}: ${p.estoque_disponivel} un. (Mínimo: ${p.estoque_minimo || 0})</li>`;
+        });
+      }
     }
 
-    // Progresso da Meta
     let metaTotal = 0;
     if (projetoId) {
-      const p = projetos.find(x => x.id === projetoId);
+      const p = (projetos || []).find(x => x.id === projetoId);
       if (p && p.meta_faturamento) metaTotal = Number(p.meta_faturamento);
     } else {
       (projetos || []).forEach(p => {
@@ -437,11 +389,14 @@ async function updateDashboard() {
     }
 
     const progresso = metaTotal > 0 ? Math.min(100, (faturamentoLiquido / metaTotal) * 100) : 0;
-    document.getElementById('meta-progresso-percent').textContent = progresso.toFixed(1) + '%';
-    document.getElementById('meta-progresso-bar').style.width = progresso + '%';
-    document.getElementById('meta-progresso-text').textContent = \`\${formatCurrency(faturamentoLiquido)} de \${formatCurrency(metaTotal)}\`;
+    const elMetaPercent = document.getElementById('meta-progresso-percent');
+    const elMetaBar = document.getElementById('meta-progresso-bar');
+    const elMetaText = document.getElementById('meta-progresso-text');
 
-    // Preparar dados para Gráficos
+    if (elMetaPercent) elMetaPercent.textContent = progresso.toFixed(1) + '%';
+    if (elMetaBar) elMetaBar.style.width = progresso + '%';
+    if (elMetaText) elMetaText.textContent = `${formatCurrency(faturamentoLiquido)} de ${formatCurrency(metaTotal)}`;
+
     renderCharts(vendas.filter(v => v.situacao !== 'cancelada'), custos, todosItens, produtos, categoriasCusto, equipes);
 
   } catch (error) {
@@ -450,154 +405,140 @@ async function updateDashboard() {
 }
 
 function renderCharts(vendas, custos, itens, produtos, categorias, equipes) {
-  cleanup(); // destroy old charts
+  cleanup();
   
-  // 1. Faturamento vs Custos por mês
-  const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-  const fatPorMes = Array(12).fill(0);
-  const custosPorMes = Array(12).fill(0);
+  if (typeof Chart === 'undefined') return;
 
-  vendas.forEach(v => {
-    const data = new Date(v.data_venda);
-    const m = data.getMonth();
-    
-    let sub = 0;
-    if (itens) {
-      itens.forEach(i => {
-        if (i.venda_id === v.id) sub += Number(i.subtotal) || 0;
-      });
-    }
-    fatPorMes[m] += (sub - (Number(v.desconto) || 0));
-  });
+  const canvasFatCustos = document.getElementById('chart-fat-custos');
+  if (canvasFatCustos) {
+    const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const fatPorMes = Array(12).fill(0);
+    const custosPorMes = Array(12).fill(0);
 
-  custos.forEach(c => {
-    if (c.situacao === 'pago') {
-      const data = new Date(c.data_despesa);
-      const m = data.getMonth();
-      custosPorMes[m] += (Number(c.valor) || 0) * (Number(c.quantidade) || 1);
-    }
-  });
-
-  chartInstances.fatCustos = new Chart(document.getElementById('chart-fat-custos'), {
-    type: 'line',
-    data: {
-      labels: meses,
-      datasets: [
-        { label: 'Faturamento', data: fatPorMes, borderColor: 'rgb(75, 192, 192)', tension: 0.1 },
-        { label: 'Custos Realizados', data: custosPorMes, borderColor: 'rgb(255, 99, 132)', tension: 0.1 }
-      ]
-    }
-  });
-
-  // 2. Vendas por Produto/Serviço
-  const vendasProduto = {};
-  if (itens) {
-    itens.forEach(i => {
-      if (vendas.find(v => v.id === i.venda_id)) {
-        const prod = (produtos || []).find(p => p.id === i.produto_id);
-        const nome = prod ? prod.nome : 'Desconhecido';
-        vendasProduto[nome] = (vendasProduto[nome] || 0) + (Number(i.subtotal) || 0);
+    vendas.forEach(v => {
+      if (v.data) {
+        const m = new Date(v.data).getMonth();
+        let sub = 0;
+        if (itens) {
+          itens.forEach(i => {
+            if (i.venda_id === v.id) sub += Number(i.subtotal) || 0;
+          });
+        }
+        if (m >= 0 && m < 12) fatPorMes[m] += (sub - (Number(v.desconto) || 0));
       }
+    });
+
+    custos.forEach(c => {
+      if (c.situacao === 'pago' && c.data) {
+        const m = new Date(c.data).getMonth();
+        if (m >= 0 && m < 12) custosPorMes[m] += (Number(c.valor) || 0) * (Number(c.quantidade) || 1);
+      }
+    });
+
+    chartInstances.fatCustos = new Chart(canvasFatCustos, {
+      type: 'line',
+      data: {
+        labels: meses,
+        datasets: [
+          { label: 'Faturamento', data: fatPorMes, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', fill: true, tension: 0.3 },
+          { label: 'Custos Realizados', data: custosPorMes, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.3 }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
     });
   }
 
-  chartInstances.vendasProd = new Chart(document.getElementById('chart-vendas-produto'), {
-    type: 'pie',
-    data: {
-      labels: Object.keys(vendasProduto),
-      datasets: [{
-        data: Object.values(vendasProduto),
-        backgroundColor: ['#4bc0c0', '#ff6384', '#36a2eb', '#ffce56', '#9966ff', '#ff9f40']
-      }]
+  const canvasVendasProd = document.getElementById('chart-vendas-produto');
+  if (canvasVendasProd) {
+    const vendasProduto = {};
+    if (itens) {
+      itens.forEach(i => {
+        if (vendas.find(v => v.id === i.venda_id)) {
+          const prod = (produtos || []).find(p => p.id === i.produto_id);
+          const nome = prod ? prod.nome : 'Outros';
+          vendasProduto[nome] = (vendasProduto[nome] || 0) + (Number(i.subtotal) || 0);
+        }
+      });
     }
-  });
 
-  // 3. Custos por Categoria
-  const custosCat = {};
-  custos.forEach(c => {
-    const cat = (categorias || []).find(x => x.id === c.categoria_id);
-    const nome = cat ? cat.nome : 'Sem categoria';
-    custosCat[nome] = (custosCat[nome] || 0) + ((Number(c.valor) || 0) * (Number(c.quantidade) || 1));
-  });
+    const labels = Object.keys(vendasProduto);
+    const data = Object.values(vendasProduto);
 
-  chartInstances.custosCat = new Chart(document.getElementById('chart-custos-categoria'), {
-    type: 'bar',
-    data: {
-      labels: Object.keys(custosCat),
-      datasets: [{
-        label: 'Custos',
-        data: Object.values(custosCat),
-        backgroundColor: '#ff6384'
-      }]
-    }
-  });
+    chartInstances.vendasProd = new Chart(canvasVendasProd, {
+      type: 'doughnut',
+      data: {
+        labels: labels.length > 0 ? labels : ['Sem vendas registradas'],
+        datasets: [{
+          data: data.length > 0 ? data : [1],
+          backgroundColor: data.length > 0 ? ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'] : ['#e2e8f0']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
 
-  // 4. Resultado por Equipe
-  const resultadoEquipe = {};
-  (equipes || []).forEach(eq => {
-    resultadoEquipe[eq.nome] = { fat: 0, cust: 0 };
-  });
+  const canvasCustosCat = document.getElementById('chart-custos-categoria');
+  if (canvasCustosCat) {
+    const custosCat = {};
+    custos.forEach(c => {
+      const cat = (categorias || []).find(x => x.id === c.categoria_id);
+      const nome = cat ? cat.nome : 'Outros Custos';
+      custosCat[nome] = (custosCat[nome] || 0) + ((Number(c.valor) || 0) * (Number(c.quantidade) || 1));
+    });
 
-  vendas.forEach(v => {
-    const eq = (equipes || []).find(x => x.id === v.equipe_id);
-    if (eq) {
-      let sub = 0;
-      if (itens) {
-        itens.forEach(i => {
-          if (i.venda_id === v.id) sub += Number(i.subtotal) || 0;
-        });
-      }
-      resultadoEquipe[eq.nome].fat += (sub - (Number(v.desconto) || 0));
-    }
-  });
+    const labels = Object.keys(custosCat);
+    const data = Object.values(custosCat);
 
-  custos.forEach(c => {
-    if (c.situacao === 'pago') {
-      const eq = (equipes || []).find(x => x.id === c.equipe_id);
-      if (eq) {
-        resultadoEquipe[eq.nome].cust += ((Number(c.valor) || 0) * (Number(c.quantidade) || 1));
-      }
-    }
-  });
+    chartInstances.custosCat = new Chart(canvasCustosCat, {
+      type: 'bar',
+      data: {
+        labels: labels.length > 0 ? labels : ['Nenhum custo registrado'],
+        datasets: [{
+          label: 'Valor Total (R$)',
+          data: data.length > 0 ? data : [0],
+          backgroundColor: '#ef4444'
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
 
-  const nomesEquipes = Object.keys(resultadoEquipe);
-  const resultadosArray = nomesEquipes.map(nome => resultadoEquipe[nome].fat - resultadoEquipe[nome].cust);
+  const canvasFormas = document.getElementById('chart-formas-pagamento');
+  if (canvasFormas) {
+    const formasPag = {};
+    vendas.forEach(v => {
+      const forma = {
+        dinheiro: 'Dinheiro',
+        pix: 'Pix',
+        cartao_credito: 'Cartão de Crédito',
+        cartao_debito: 'Cartão de Débito',
+        transferencia: 'Transferência'
+      }[v.forma_pagamento] || v.forma_pagamento || 'Outro';
+      formasPag[forma] = (formasPag[forma] || 0) + 1;
+    });
 
-  chartInstances.resEquipe = new Chart(document.getElementById('chart-resultado-equipe'), {
-    type: 'bar',
-    options: { indexAxis: 'y' },
-    data: {
-      labels: nomesEquipes,
-      datasets: [{
-        label: 'Resultado',
-        data: resultadosArray,
-        backgroundColor: resultadosArray.map(v => v >= 0 ? '#4bc0c0' : '#ff6384')
-      }]
-    }
-  });
+    const labels = Object.keys(formasPag);
+    const data = Object.values(formasPag);
 
-  // 5. Formas de Pagamento
-  const formasPag = {};
-  vendas.forEach(v => {
-    const forma = v.forma_pagamento || 'Não informada';
-    formasPag[forma] = (formasPag[forma] || 0) + 1;
-  });
-
-  chartInstances.formasPag = new Chart(document.getElementById('chart-formas-pagamento'), {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(formasPag),
-      datasets: [{
-        data: Object.values(formasPag),
-        backgroundColor: ['#36a2eb', '#ffce56', '#4bc0c0', '#ff6384', '#9966ff']
-      }]
-    }
-  });
+    chartInstances.formasPag = new Chart(canvasFormas, {
+      type: 'doughnut',
+      data: {
+        labels: labels.length > 0 ? labels : ['Nenhuma venda'],
+        datasets: [{
+          data: data.length > 0 ? data : [1],
+          backgroundColor: data.length > 0 ? ['#10b981', '#2563eb', '#f59e0b', '#8b5cf6', '#64748b'] : ['#e2e8f0']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
 }
 
 export function cleanup() {
   Object.values(chartInstances).forEach(chart => {
-    if (chart) chart.destroy();
+    if (chart && typeof chart.destroy === 'function') {
+      chart.destroy();
+    }
   });
   chartInstances = {};
 }

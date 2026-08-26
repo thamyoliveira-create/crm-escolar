@@ -53,11 +53,13 @@ export async function render(container) {
 
             <!-- Dados -->
             <div id="tab-dados" class="tab-content hidden bg-white p-6 rounded shadow">
-                <h2 class="text-lg font-bold mb-4">Dados do Sistema & Demonstração</h2>
+                <h2 class="text-lg font-bold mb-4">Armazenamento & Banco de Dados</h2>
                 <div class="bg-blue-50 text-blue-800 p-4 rounded mb-4">
-                    <p>O sistema armazena os dados localmente (localStorage) para fins de demonstração.</p>
+                    <p class="text-sm">O sistema armazena os registros localmente no seu navegador via <code>localStorage</code> com persistência automática.</p>
                 </div>
-                <button id="btn-reset" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold">Resetar Dados de Demonstração</button>
+                <button id="btn-reset" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-trash"></i> Limpar Todos os Registros
+                </button>
             </div>
 
         </div>
@@ -88,16 +90,13 @@ function setupTabs() {
 
 function setupListeners() {
     document.getElementById('btn-reset')?.addEventListener('click', () => {
-        if(confirm('Tem certeza que deseja resetar todos os dados? Isso recarregará os dados de demonstração iniciais.')) {
+        if(confirm('Tem certeza que deseja apagar todos os registros do banco de dados local?')) {
+            localStorage.removeItem('crm_escolar_db');
             if (db.resetDemoData) {
                 db.resetDemoData();
-                showToast('Dados resetados com sucesso!', 'success');
-                setTimeout(() => window.location.reload(), 1500);
-            } else {
-                localStorage.clear();
-                showToast('LocalStorage limpo.', 'success');
-                setTimeout(() => window.location.reload(), 1500);
             }
+            showToast('Banco de dados limpo com sucesso!', 'success');
+            setTimeout(() => window.location.reload(), 1000);
         }
     });
 

@@ -80,36 +80,89 @@ export async function render(container) {
 
 async function loadData() {
     try {
-        state.vendas = await db.getVendas(state.filtros);
+        const { data: vendas } = await db.from('vendas');
+        const { data: clientes } = await db.from('clientes');
+        const { data: equipes } = await db.from('equipes');
+        const { data: itens } = await db.from('itens_venda');
+
+        let lista = (vendas || []).map(v => {
+            const cli = (clientes || []).find(c => c.id === v.cliente_id);
+            const eq = (equipes || []).find(e => e.id === v.equipe_id);
+            const vItens = (itens || []).filter(i => i.venda_id === v.id);
+            const subtotal = vItens.reduce((acc, i) => acc + (Number(i.subtotal) || 0), 0);
+            const desc = Number(v.desconto) || 0;
+            return {
+                ...v,
+                cliente_nome: cli ? cli.nome : 'Não informado',
+                equipe_nome: eq ? eq.nome : 'Geral',
+                valor_total: subtotal,
+                desconto: desc,
+                valor_liquido: Math.max(0, subtotal - desc),
+                status: v.situacao || 'pendente'
+            };
+        });
+
+        if (state.filtros.busca) {
+            const b = state.filtros.busca.toLowerCase();
+            lista = lista.filter(v => v.numero?.toLowerCase().includes(b) || v.cliente_nome?.toLowerCase().includes(b));
+        }
+        if (state.filtros.equipe) {
+            lista = lista.filter(v => v.equipe_id === state.filtros.equipe);
+        }
+        if (state.filtros.status) {
+            lista = lista.filter(v => v.status === state.filtros.status);
+        }
+        if (state.filtros.formaPagamento) {
+            lista = lista.filter(v => v.forma_pagamento === state.filtros.formaPagamento);
+        }
+        if (state.filtros.periodo) {
+            lista = lista.filter(v => v.data === state.filtros.periodo);
+        }
+
+        state.vendas = lista;
         renderTable();
         renderTotais();
     } catch (err) {
-        utils.showError('Erro ao carregar vendas', err);
+        console.error('Erro ao carregar vendas', err);
+        showToast('Erro ao carregar vendas', 'error');
     }
 }
 
 function renderTable() {
     const tbody = document.getElementById('vendas-tbody');
+    if (!tbody) return;
     tbody.innerHTML = '';
+    
+    if (!state.vendas || state.vendas.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                    <i class="fa-solid fa-receipt text-3xl mb-2 text-gray-300"></i>
+                    <p class="font-medium text-sm">Nenhuma venda registrada até o momento</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
     
     state.vendas.forEach(venda => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${venda.numero}<br><span class="text-gray-500">${formatDate(venda.data)}</span></td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">${venda.numero}<br><span class="text-xs text-gray-500 font-normal">${formatDate(venda.data)}</span></td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${venda.cliente_nome}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${venda.equipe_nome}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 Total: ${formatCurrency(venda.valor_total)}<br>
                 Desc: ${formatCurrency(venda.desconto)}<br>
-                Líq: <span class="font-bold">${formatCurrency(venda.valor_liquido)}</span>
+                Líq: <span class="font-bold text-emerald-600">${formatCurrency(venda.valor_liquido)}</span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-${getStatusColor(venda.status)}-100 text-${getStatusColor(venda.status)}-800">
+                <span class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-50 text-blue-800 border border-blue-200">
                     ${venda.status}
                 </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button class="text-indigo-600 hover:text-indigo-900 mr-2" onclick="viewVenda('${venda.id}')">Ver Detalhes</button>
+                <button class="text-blue-600 hover:text-blue-900 mr-2 text-xs font-semibold" onclick="viewVenda('${venda.id}')">Ver Detalhes</button>
             </td>
         `;
         tbody.appendChild(tr);

@@ -64,16 +64,33 @@ async function loadData() {
 
 function renderCustos() {
     const tbody = document.getElementById('custos-tbody');
+    if (!tbody) return;
     tbody.innerHTML = '';
+    if (!state.custos || state.custos.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                    <i class="fa-solid fa-file-invoice-dollar text-3xl mb-2 text-gray-300"></i>
+                    <p class="font-medium text-sm">Nenhum custo registrado até o momento</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
     state.custos.forEach(c => {
+        const total = (Number(c.valor) || 0) * (Number(c.quantidade) || 1);
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td class="px-6 py-4 whitespace-nowrap">${c.descricao}</td>
-            <td class="px-6 py-4 whitespace-nowrap">${c.categoria} <br><span class="text-xs">${c.tipo}</span></td>
-            <td class="px-6 py-4 whitespace-nowrap">${formatDate(c.data)}</td>
-            <td class="px-6 py-4 whitespace-nowrap font-medium">${formatCurrency(c.total)}</td>
-            <td class="px-6 py-4 whitespace-nowrap">${c.status}</td>
-            <td class="px-6 py-4 whitespace-nowrap"><button class="text-blue-600" onclick="editarCusto('${c.id}')">Editar</button></td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${c.descricao}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${c.categoria || 'Geral'} <br><span class="text-xs text-gray-400">${c.tipo_custo || 'Variável'}</span></td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(c.data)}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${formatCurrency(total)}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${c.situacao === 'pago' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">
+                    ${c.situacao === 'pago' ? 'Pago' : (c.situacao || 'Previsto')}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm"><button class="text-blue-600 hover:text-blue-800 text-xs font-semibold" onclick="editarCusto('${c.id}')">Editar</button></td>
         `;
         tbody.appendChild(tr);
     });
