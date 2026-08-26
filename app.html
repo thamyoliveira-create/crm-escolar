@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Escolar</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e3a5f">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <!-- CSS customizado -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-50 text-slate-800" style="font-family: system-ui, -apple-system, sans-serif;">
+
+  <div class="flex h-screen w-full overflow-hidden">
+
+    <!-- ====== SIDEBAR ====== -->
+    <aside id="sidebar"
+      class="w-64 h-full flex flex-col z-30 fixed md:static transition-transform duration-300 ease-in-out"
+      style="background-color:#1e3a5f; transform: translateX(-100%); min-height: 100vh;">
+
+      <!-- Logo -->
+      <div class="flex items-center justify-between px-4 py-4 border-b" style="border-color:rgba(255,255,255,0.1)">
+        <div class="flex items-center gap-2.5">
+          <i class="fa-solid fa-school text-xl text-white"></i>
+          <span class="text-white font-bold text-lg">CRM Escolar</span>
+        </div>
+        <button id="close-sidebar" class="md:hidden text-gray-300 hover:text-white p-1" aria-label="Fechar menu">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Badge Demo -->
+      <div class="px-4 py-1.5 flex items-center justify-center gap-1.5 text-xs font-bold uppercase tracking-wider" style="background:rgba(217,119,6,0.9); color:#fef3c7">
+        <i class="fa-solid fa-flask text-xs"></i> Ambiente Demo
+      </div>
+
+      <!-- Info do Usuário -->
+      <div class="px-4 py-3 border-b" style="border-color:rgba(255,255,255,0.1)">
+        <div class="flex items-center gap-3">
+          <div id="user-avatar" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0"
+            style="background:rgba(255,255,255,0.2); color:white">A</div>
+          <div class="overflow-hidden">
+            <div class="font-medium text-white text-sm truncate" id="user-name">Carregando...</div>
+            <div class="text-xs truncate" id="user-role" style="color:#93c5fd">...</div>
+          </div>
+        </div>
+        <div id="user-team" class="hidden mt-2 px-2 py-1 rounded text-xs" style="background:rgba(255,255,255,0.1); color:#bfdbfe"></div>
+      </div>
+
+      <!-- Navegação -->
+      <nav class="flex-1 overflow-y-auto py-3 custom-scrollbar" aria-label="Menu principal">
+        <div id="nav-menu" class="px-2 space-y-0.5">
+          <!-- Gerado pelo router -->
+        </div>
+      </nav>
+
+      <!-- Footer -->
+      <div class="p-3 border-t" style="border-color:rgba(255,255,255,0.1)">
+        <button id="logout-btn"
+          class="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm transition-colors"
+          style="color:#94a3b8" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='white'" onmouseout="this.style.background=''; this.style.color='#94a3b8'">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span>Sair</span>
+        </button>
+        <div class="text-center text-xs mt-2" style="color:#475569">v1.0.0-MVP</div>
+      </div>
+    </aside>
+
+    <!-- Overlay mobile -->
+    <div id="sidebar-overlay" class="fixed inset-0 z-20 hidden" style="background:rgba(0,0,0,0.5)" aria-hidden="true"></div>
+
+    <!-- ====== MAIN ====== -->
+    <main class="flex-1 flex flex-col overflow-hidden" style="min-width:0">
+
+      <!-- Header Mobile -->
+      <header class="flex items-center justify-between px-4 h-14 bg-white border-b border-gray-200 md:hidden z-10 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <button id="open-sidebar" class="p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100" aria-label="Abrir menu">
+            <i class="fa-solid fa-bars text-lg"></i>
+          </button>
+          <h1 class="font-bold text-gray-800 truncate" id="mobile-page-title">Dashboard</h1>
+        </div>
+        <div id="mobile-avatar" class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm text-white" style="background:#1e3a5f">A</div>
+      </header>
+
+      <!-- Header Desktop -->
+      <header class="hidden md:flex items-center justify-between px-6 py-3 bg-white border-b border-gray-200 z-10 flex-shrink-0">
+        <h1 class="text-xl font-bold text-gray-800" id="desktop-page-title">Dashboard</h1>
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-gray-500" id="header-user-info"></span>
+          <div id="desktop-avatar" class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-white" style="background:#1e3a5f">A</div>
+        </div>
+      </header>
+
+      <!-- Conteúdo das Páginas -->
+      <div class="flex-1 overflow-auto custom-scrollbar" id="main-scroll-area">
+        <div id="page-content" class="max-w-7xl mx-auto p-4 md:p-6 pb-10">
+          <!-- Conteúdo injetado pelo router -->
+        </div>
+      </div>
+
+      <!-- Global Loader -->
+      <div id="global-loader" class="absolute inset-0 bg-white/80 z-50 flex flex-col items-center justify-center" style="display:flex">
+        <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-3" style="color:#1e3a5f"></i>
+        <span class="text-gray-600 font-medium">Carregando...</span>
+      </div>
+
+      <!-- Container de Toasts -->
+      <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2" aria-live="polite"></div>
+
+      <!-- Container de Modais -->
+      <div id="modal-root"></div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initRouter, navigate } from './router.js';
+    import { auth } from './db.js';
+
+    async function init() {
+      // Verificar autenticação
+      const { data: { session } } = auth.getSession();
+      if (!session) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const profile = session.profile;
+      if (!profile) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Atualizar UI com dados do usuário
+      const initial = (profile.nome || 'U').charAt(0).toUpperCase();
+      const perfilLabel = {
+        administrador: 'Administrador',
+        professor: 'Professor',
+        estudante: 'Estudante',
+        consulta: 'Consulta'
+      }[profile.perfil] || profile.perfil;
+
+      document.getElementById('user-name').textContent = profile.nome || profile.email;
+      document.getElementById('user-role').textContent = perfilLabel;
+      document.getElementById('user-avatar').textContent = initial;
+      document.getElementById('mobile-avatar').textContent = initial;
+      document.getElementById('desktop-avatar').textContent = initial;
+      document.getElementById('header-user-info').textContent = profile.nome;
+
+      // Mostrar equipe se estudante
+      if (profile.perfil === 'estudante') {
+        const teamDiv = document.getElementById('user-team');
+        // Buscar equipe do estudante
+        try {
+          const { db } = await import('./db.js');
+          const { data: membros } = await db.from('equipe_membros').eq('estudante_id', profile.id);
+          if (membros && membros.length > 0) {
+            const { data: equipes } = await db.from('equipes').eq('id', membros[0].equipe_id);
+            if (equipes && equipes.length > 0) {
+              teamDiv.textContent = '⚡ ' + equipes[0].nome;
+              teamDiv.classList.remove('hidden');
+            }
+          }
+        } catch(e) {}
+      }
+
+      // Sidebar mobile
+      const sidebar  = document.getElementById('sidebar');
+      const overlay  = document.getElementById('sidebar-overlay');
+      const openBtn  = document.getElementById('open-sidebar');
+      const closeBtn = document.getElementById('close-sidebar');
+
+      function openSidebar() {
+        sidebar.style.transform = 'translateX(0)';
+        overlay.classList.remove('hidden');
+        closeBtn.focus();
+      }
+      function closeSidebar() {
+        sidebar.style.transform = 'translateX(-100%)';
+        overlay.classList.add('hidden');
+      }
+
+      openBtn.addEventListener('click', openSidebar);
+      closeBtn.addEventListener('click', closeSidebar);
+      overlay.addEventListener('click', closeSidebar);
+
+      // Fechar sidebar ao clicar em link no mobile
+      document.getElementById('nav-menu').addEventListener('click', e => {
+        if (e.target.closest('a') && window.innerWidth < 768) closeSidebar();
+      });
+
+      // Desktop: sidebar sempre visível
+      if (window.innerWidth >= 768) {
+        sidebar.style.transform = 'translateX(0)';
+      }
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768) {
+          sidebar.style.transform = 'translateX(0)';
+          overlay.classList.add('hidden');
+        } else {
+          if (!overlay.classList.contains('hidden')) return;
+          sidebar.style.transform = 'translateX(-100%)';
+        }
+      });
+
+      // Logout
+      document.getElementById('logout-btn').addEventListener('click', async () => {
+        await auth.signOut();
+        window.location.href = 'index.html';
+      });
+
+      // Inicializar roteador com o perfil do usuário
+      initRouter(profile.perfil);
+    }
+
+    init().catch(err => {
+      console.error('Erro de inicialização:', err);
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CRM Escolar - Sistema de Gestão de Projetos Multidisciplinares">
+  <title>CRM Escolar — Login</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1e3a5f">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      primary: { DEFAULT: '#1e3a5f', dark: '#162c4a', light: '#2a4f7a' },
+    }}}}
+  </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-800 via-blue-900 to-slate-900 flex items-center justify-center p-4">
+  <div class="w-full max-w-5xl grid md:grid-cols-2 gap-8 items-center">
+
+    <!-- Formulário de Login -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-auto order-2 md:order-1">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style="background:#e8eef7">
+          <i class="fa-solid fa-school text-3xl" style="color:#1e3a5f"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-900">CRM Escolar</h1>
+        <p class="text-sm text-gray-500 mt-1">Gestão de Projetos Multidisciplinares</p>
+        <div class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold">
+          <i class="fa-solid fa-flask text-xs"></i> Ambiente de Demonstração
+        </div>
+      </div>
+
+      <form id="login-form" class="space-y-5" novalidate>
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fa-regular fa-envelope text-gray-400 text-sm"></i>
+            </div>
+            <input type="email" id="email" name="email" required autocomplete="email"
+              class="pl-9 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+              style="--tw-ring-color:#2563eb" placeholder="seu@email.com">
+          </div>
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fa-solid fa-lock text-gray-400 text-sm"></i>
+            </div>
+            <input type="password" id="password" name="password" required autocomplete="current-password"
+              class="pl-9 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+              placeholder="••••••••">
+          </div>
+        </div>
+
+        <div id="error-message" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm flex items-center gap-2" role="alert" aria-live="polite">
+          <i class="fa-solid fa-circle-exclamation flex-shrink-0"></i>
+          <span id="error-text">E-mail ou senha incorretos.</span>
+        </div>
+
+        <button type="submit" id="btn-login"
+          class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2"
+          style="background-color:#1e3a5f;">
+          <i class="fa-solid fa-right-to-bracket" id="login-icon"></i>
+          <span id="login-text">Entrar</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Acesso Rápido Demo -->
+    <div class="text-white order-1 md:order-2">
+      <h2 class="text-xl font-bold mb-1">Acesso Rápido</h2>
+      <p class="text-blue-300 text-sm mb-5">Clique em um perfil para preencher as credenciais e explorar o sistema.</p>
+
+      <div class="space-y-2.5">
+        <button type="button" class="demo-btn w-full text-left p-3.5 rounded-xl transition-all border flex items-center gap-3 group"
+          style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.15);"
+          data-email="admin@escola.edu" data-password="admin123">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(239,68,68,0.2)">
+            <i class="fa-solid fa-user-shield" style="color:#fca5a5"></i>
+          </div>
+          <div class="flex-1 text-left">
+            <div class="font-semibold text-sm">Ana Administradora</div>
+            <div class="text-xs" style="color:#93c5fd">admin@escola.edu • Acesso total</div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs" style="color:#93c5fd"></i>
+        </button>
+
+        <button type="button" class="demo-btn w-full text-left p-3.5 rounded-xl transition-all border flex items-center gap-3 group"
+          style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.15);"
+          data-email="prof@escola.edu" data-password="prof123">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(59,130,246,0.2)">
+            <i class="fa-solid fa-chalkboard-user" style="color:#93c5fd"></i>
+          </div>
+          <div class="flex-1 text-left">
+            <div class="font-semibold text-sm">Prof. Carlos Mendes</div>
+            <div class="text-xs" style="color:#93c5fd">prof@escola.edu • Professor</div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs" style="color:#93c5fd"></i>
+        </button>
+
+        <button type="button" class="demo-btn w-full text-left p-3.5 rounded-xl transition-all border flex items-center gap-3 group"
+          style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.15);"
+          data-email="ecos@escola.edu" data-password="est123">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(34,197,94,0.2)">
+            <i class="fa-solid fa-leaf" style="color:#86efac"></i>
+          </div>
+          <div class="flex-1 text-left">
+            <div class="font-semibold text-sm">Beatriz Oliveira</div>
+            <div class="text-xs" style="color:#93c5fd">ecos@escola.edu • Estudante — Eco Bags</div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs" style="color:#93c5fd"></i>
+        </button>
+
+        <button type="button" class="demo-btn w-full text-left p-3.5 rounded-xl transition-all border flex items-center gap-3 group"
+          style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.15);"
+          data-email="horta@escola.edu" data-password="est123">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(234,179,8,0.2)">
+            <i class="fa-solid fa-seedling" style="color:#fde68a"></i>
+          </div>
+          <div class="flex-1 text-left">
+            <div class="font-semibold text-sm">Diego Ferreira</div>
+            <div class="text-xs" style="color:#93c5fd">horta@escola.edu • Estudante — Sabor da Horta</div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs" style="color:#93c5fd"></i>
+        </button>
+
+        <button type="button" class="demo-btn w-full text-left p-3.5 rounded-xl transition-all border flex items-center gap-3 group"
+          style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.15);"
+          data-email="consulta@escola.edu" data-password="cons123">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(168,85,247,0.2)">
+            <i class="fa-solid fa-eye" style="color:#d8b4fe"></i>
+          </div>
+          <div class="flex-1 text-left">
+            <div class="font-semibold text-sm">Fernanda Consulta</div>
+            <div class="text-xs" style="color:#93c5fd">consulta@escola.edu • Somente leitura</div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs" style="color:#93c5fd"></i>
+        </button>
+      </div>
+
+      <p class="mt-4 text-xs text-center" style="color:#93c5fd">
+        <i class="fa-solid fa-shield-halved mr-1"></i>
+        Dados de demonstração. Nenhuma informação real é armazenada.
+      </p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth } from './db.js';
+
+    // Verificar sessão já existente
+    try {
+      const { data } = auth.getSession();
+      if (data && data.session) window.location.href = 'app.html';
+    } catch(e) {}
+
+    const form       = document.getElementById('login-form');
+    const emailEl    = document.getElementById('email');
+    const passwordEl = document.getElementById('password');
+    const errorDiv   = document.getElementById('error-message');
+    const errorText  = document.getElementById('error-text');
+    const btnLogin   = document.getElementById('btn-login');
+    const loginIcon  = document.getElementById('login-icon');
+    const loginText  = document.getElementById('login-text');
+
+    document.querySelectorAll('.demo-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        emailEl.value = btn.dataset.email;
+        passwordEl.value = btn.dataset.password;
+        errorDiv.classList.add('hidden');
+        btn.style.background = 'rgba(255,255,255,0.25)';
+        setTimeout(() => btn.style.background = 'rgba(255,255,255,0.1)', 400);
+      });
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorDiv.classList.add('hidden');
+      const email    = emailEl.value.trim();
+      const password = passwordEl.value;
+      if (!email || !password) {
+        errorText.textContent = 'Preencha e-mail e senha.';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+      btnLogin.disabled = true;
+      loginIcon.className = 'fa-solid fa-circle-notch fa-spin';
+      loginText.textContent = 'Entrando...';
+      try {
+        const { data, error } = await auth.signInWithPassword({ email, password });
+        if (error) {
+          errorText.textContent = error.message || 'E-mail ou senha incorretos.';
+          errorDiv.classList.remove('hidden');
+          errorDiv.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          window.location.href = 'app.html';
+        }
+      } catch(err) {
+        errorText.textContent = 'Erro inesperado. Tente novamente.';
+        errorDiv.classList.remove('hidden');
+      } finally {
+        btnLogin.disabled = false;
+        loginIcon.className = 'fa-solid fa-right-to-bracket';
+        loginText.textContent = 'Entrar';
+      }
+    });
+  </script>
+</body>
+</html>
