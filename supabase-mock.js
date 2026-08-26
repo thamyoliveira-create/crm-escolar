@@ -30,10 +30,10 @@ const USERS = {
 const DEMO_DATA = {
   profiles: [
     { id: 'usr-adm-0001', nome: 'Ana Administradora',   email: 'admin@escola.edu',    perfil: 'administrador', ativo: true, criado_em: '2025-01-10T08:00:00Z' },
-    { id: 'usr-prf-0001', nome: 'Prof. Carlos Mendes',  email: 'prof@escola.edu',     perfil: 'professor',     ativo: true, criado_em: '2025-01-12T08:00:00Z' },
-    { id: 'usr-est-0001', nome: 'Beatriz Oliveira',     email: 'ecos@escola.edu',     perfil: 'estudante',     ativo: true, criado_em: '2025-02-01T08:00:00Z' },
-    { id: 'usr-est-0002', nome: 'Diego Ferreira',       email: 'horta@escola.edu',    perfil: 'estudante',     ativo: true, criado_em: '2025-02-01T08:00:00Z' },
-    { id: 'usr-con-0001', nome: 'Fernanda Consulta',    email: 'consulta@escola.edu', perfil: 'consulta',      ativo: true, criado_em: '2025-02-05T08:00:00Z' },
+    { id: 'usr-prf-0001', nome: 'Prof. Carlos Mendes',  email: 'prof@escola.edu',     perfil: 'administrador', ativo: true, criado_em: '2025-01-12T08:00:00Z' },
+    { id: 'usr-est-0001', nome: 'Beatriz Oliveira',     email: 'ecos@escola.edu',     perfil: 'administrador', ativo: true, criado_em: '2025-02-01T08:00:00Z' },
+    { id: 'usr-est-0002', nome: 'Diego Ferreira',       email: 'horta@escola.edu',    perfil: 'administrador', ativo: true, criado_em: '2025-02-01T08:00:00Z' },
+    { id: 'usr-con-0001', nome: 'Fernanda Consulta',    email: 'consulta@escola.edu', perfil: 'administrador', ativo: true, criado_em: '2025-02-05T08:00:00Z' },
   ],
 
   projetos: [
@@ -311,37 +311,127 @@ export const supabaseMock = {
 };
 
 export const supabaseAuth = {
-  signInWithPassword: async ({ email, password }) => {
-    const u = USERS[email];
-    if (!u || u.password !== password) return { data:null, error:{message:'E-mail ou senha incorretos.'} };
+  signInWithOAuth: async ({ provider, options = {} }) => {
     const db = getDb();
-    const profile = (db.profiles||[]).find(p=>p.id===u.profile_id);
-    if (!profile||!profile.ativo) return { data:null, error:{message:'Usuário inativo ou não encontrado.'} };
-    const session = { user:{id:u.profile_id,email}, profile, expires_at:Date.now()+86400000 };
+    const email = options.email || (options.data && options.data.email) || 'usuario.google@escola.edu';
+    const nome = options.nome || (options.data && options.data.full_name) || (options.data && options.data.name) || email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    const avatar_url = options.avatar_url || (options.data && options.data.avatar_url) || null;
+
+    let profile = (db.profiles || []).find(p => p.email.toLowerCase() === email.toLowerCase());
+
+    if (!profile) {
+      profile = {
+        id: 'usr-goo-' + Date.now().toString(36),
+        nome: nome || 'Administrador Google',
+        email: email,
+        perfil: 'administrador',
+        avatar_url: avatar_url,
+        ativo: true,
+        provider: 'google',
+        criado_em: new Date().toISOString()
+      };
+      db.profiles = db.profiles || [];
+      db.profiles.push(profile);
+      persist();
+    } else {
+      // Garantir que todos são administrador
+      profile.perfil = 'administrador';
+      if (avatar_url) profile.avatar_url = avatar_url;
+      profile.provider = 'google';
+      persist();
+    }
+
+    const session = {
+      user: {
+        id: profile.id,
+        email: profile.email,
+        user_metadata: { full_name: profile.nome, avatar_url: profile.avatar_url }
+      },
+      profile,
+      provider: 'google',
+      expires_at: Date.now() + 86400000
+    };
+
     localStorage.setItem('crm_session', JSON.stringify(session));
     localStorage.setItem('user_profile', JSON.stringify(profile));
-    return { data:{ session, user:session.user }, error:null };
+    return { data: { session, user: session.user }, error: null };
   },
+
+  signInWithPassword: async ({ email, password }) => {
+    const u = USERS[email];
+    const db = getDb();
+    let profile = (db.profiles || []).find(p => p.email.toLowerCase() === email.toLowerCase());
+
+    if (!profile && (!u || u.password !== password)) {
+      // Se for uma conta não pré-cadastrada no demo, cria automaticamente com privilégios de Administrador
+      profile = {
+        id: 'usr-' + Date.now().toString(36),
+        nome: email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        email: email,
+        perfil: 'administrador',
+        ativo: true,
+        criado_em: new Date().toISOString()
+      };
+      db.profiles = db.profiles || [];
+      db.profiles.push(profile);
+      persist();
+    } else if (!profile && u) {
+      profile = (db.profiles || []).find(p => p.id === u.profile_id);
+    }
+
+    if (!profile || !profile.ativo) {
+      return { data: null, error: { message: 'Usuário inativo ou não encontrado.' } };
+    }
+
+    // Todos são Administrador
+    profile.perfil = 'administrador';
+
+    const session = {
+      user: { id: profile.id, email: profile.email },
+      profile,
+      expires_at: Date.now() + 86400000
+    };
+
+    localStorage.setItem('crm_session', JSON.stringify(session));
+    localStorage.setItem('user_profile', JSON.stringify(profile));
+    return { data: { session, user: session.user }, error: null };
+  },
+
   signOut: async () => {
     localStorage.removeItem('crm_session');
     localStorage.removeItem('user_profile');
     _dbData = null;
-    return { error:null };
+    return { error: null };
   },
+
   getSession: () => {
     try {
       const s = localStorage.getItem('crm_session');
-      if (!s) return { data:{session:null}, error:null };
+      if (!s) return { data: { session: null }, error: null };
       const session = JSON.parse(s);
-      if (session.expires_at < Date.now()) { localStorage.removeItem('crm_session'); return { data:{session:null}, error:null }; }
-      return { data:{session}, error:null };
-    } catch(e) { return { data:{session:null}, error:null }; }
+      if (session.expires_at < Date.now()) {
+        localStorage.removeItem('crm_session');
+        return { data: { session: null }, error: null };
+      }
+      if (session.profile) {
+        session.profile.perfil = 'administrador'; // Enforce admin
+      }
+      return { data: { session }, error: null };
+    } catch(e) {
+      return { data: { session: null }, error: null };
+    }
   },
+
   getUser: () => {
     try {
       const p = localStorage.getItem('user_profile');
-      return p ? { data:{user:JSON.parse(p)}, error:null } : { data:{user:null}, error:null };
-    } catch(e) { return { data:{user:null}, error:null }; }
+      if (!p) return { data: { user: null }, error: null };
+      const profile = JSON.parse(p);
+      profile.perfil = 'administrador'; // Enforce admin
+      return { data: { user: profile }, error: null };
+    } catch(e) {
+      return { data: { user: null }, error: null };
+    }
   }
 };
 

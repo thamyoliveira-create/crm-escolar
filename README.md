@@ -27,17 +27,22 @@ Acesse `http://localhost:8000` no seu navegador.
 
 ---
 
-## 🔐 Credenciais de Demonstração
+## 🔐 Autenticação com Google & Acesso Universal de Administrador
 
-O sistema vem pré-configurado com contas para todos os perfis de acesso. Utilize os dados da tabela abaixo na tela de login:
+O CRM Escolar suporta **Login com o Google** com perfil de **Administrador para todos os usuários**.
 
-| Perfil | E-mail | Senha | Descrição / Escopo |
+- **Entrar com o Google**: Clique em *"Continuar com o Google"* na tela de login para se autenticar instantaneamente com sua conta Google (ou escolher uma das contas disponíveis).
+- **Acesso Total (ADM)**: Qualquer usuário logado recebe automaticamente privilégios de **Administrador**, tendo acesso irrestrito a todos os módulos, equipes, projetos, relatórios, gestão de usuários e configurações.
+
+Você também pode acessar utilizando qualquer e-mail/senha ou as credenciais pré-configuradas:
+
+| Perfil / Conta | E-mail | Senha | Acesso |
 | :--- | :--- | :--- | :--- |
-| **👑 Administrador** | `admin@escola.edu` | `admin123` | Acesso total ao sistema, relatórios globais, gestão de usuários e configurações |
-| **👨‍🏫 Professor** | `prof@escola.edu` | `prof123` | Acompanhamento e avaliação pedagógica de todas as equipes e projetos |
-| **🎒 Estudante (Eco Bags)** | `ecos@escola.edu` | `est123` | Beatriz Souza — Gestão de clientes, vendas e custos da equipe *Eco Bags* |
-| **🌱 Estudante (Horta)** | `horta@escola.edu` | `est123` | Diego Lima — Gestão de clientes, vendas e custos da equipe *Sabor da Horta* |
-| **👁️ Consulta** | `consulta@escola.edu` | `cons123` | Visitante / Auditor — Acesso somente leitura a dashboards e relatórios |
+| **🌐 Login com Google** | `seu.nome@gmail.com` | *(1 clique)* | **👑 Administrador (Acesso Total)** |
+| **👑 Ana Administradora** | `admin@escola.edu` | `admin123` | **👑 Administrador (Acesso Total)** |
+| **👨‍🏫 Prof. Carlos Mendes** | `prof@escola.edu` | `prof123` | **👑 Administrador (Acesso Total)** |
+| **🎒 Beatriz (Eco Bags)** | `ecos@escola.edu` | `est123` | **👑 Administrador (Acesso Total)** |
+| **🌱 Diego (Horta)** | `horta@escola.edu` | `est123` | **👑 Administrador (Acesso Total)** |
 
 ---
 

@@ -16,144 +16,211 @@
     }}}}
   </script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-800 via-blue-900 to-slate-900 flex items-center justify-center p-4">
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 flex items-center justify-center p-4">
   <div class="w-full max-w-5xl grid md:grid-cols-2 gap-8 items-center">
 
-    <!-- Formulário de Login -->
-    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-auto order-2 md:order-1">
-      <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style="background:#e8eef7">
+    <!-- Card de Login -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-auto order-2 md:order-1 border border-slate-100">
+      <div class="text-center mb-6">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-3 shadow-sm" style="background:#e8eef7">
           <i class="fa-solid fa-school text-3xl" style="color:#1e3a5f"></i>
         </div>
-        <h1 class="text-2xl font-bold text-gray-900">CRM Escolar</h1>
-        <p class="text-sm text-gray-500 mt-1">Gestão de Projetos Multidisciplinares</p>
-        <div class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold">
-          <i class="fa-solid fa-flask text-xs"></i> Ambiente de Demonstração
+        <h1 class="text-2xl font-black text-gray-900 tracking-tight">CRM Escolar</h1>
+        <p class="text-xs text-gray-500 mt-1">Gestão de Projetos Multidisciplinares</p>
+        
+        <div class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-xs font-semibold">
+          <i class="fa-solid fa-shield-halved text-emerald-600 text-xs"></i> Acesso Total: Administrador
         </div>
       </div>
 
-      <form id="login-form" class="space-y-5" novalidate>
+      <!-- BOTÃO OFICIAL ENTRAR COM GOOGLE -->
+      <div class="space-y-4 mb-6">
+        <button type="button" id="btn-google-login"
+          class="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 text-sm font-bold shadow-sm transition-all hover:shadow hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          <!-- Google G Logo SVG -->
+          <svg class="w-5 h-5" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Continuar com o Google</span>
+        </button>
+
+        <div class="relative flex py-1 items-center">
+          <div class="flex-grow border-t border-gray-200"></div>
+          <span class="flex-shrink mx-3 text-xs text-gray-400 font-medium uppercase tracking-wider">ou acesse com e-mail</span>
+          <div class="flex-grow border-t border-gray-200"></div>
+        </div>
+      </div>
+
+      <!-- Formulário de Email e Senha -->
+      <form id="login-form" class="space-y-4" novalidate>
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+          <label for="email" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">E-mail</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <i class="fa-regular fa-envelope text-gray-400 text-sm"></i>
             </div>
             <input type="email" id="email" name="email" required autocomplete="email"
-              class="pl-9 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
-              style="--tw-ring-color:#2563eb" placeholder="seu@email.com">
+              class="pl-9 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="admin@escola.edu">
           </div>
         </div>
 
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+          <label for="password" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Senha</label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <i class="fa-solid fa-lock text-gray-400 text-sm"></i>
             </div>
             <input type="password" id="password" name="password" required autocomplete="current-password"
-              class="pl-9 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+              class="pl-9 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="••••••••">
           </div>
         </div>
 
-        <div id="error-message" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm flex items-center gap-2" role="alert" aria-live="polite">
+        <div id="error-message" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs flex items-center gap-2" role="alert" aria-live="polite">
           <i class="fa-solid fa-circle-exclamation flex-shrink-0"></i>
           <span id="error-text">E-mail ou senha incorretos.</span>
         </div>
 
         <button type="submit" id="btn-login"
-          class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold text-white transition-all focus:outline-none focus:ring-2 focus:ring-offset-2"
+          class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-bold text-white transition-all shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2"
           style="background-color:#1e3a5f;">
           <i class="fa-solid fa-right-to-bracket" id="login-icon"></i>
-          <span id="login-text">Entrar</span>
+          <span id="login-text">Entrar como Administrador</span>
         </button>
       </form>
     </div>
 
-    <!-- Acesso Rápido Demo -->
-    <div class="text-white order-1 md:order-2">
-      <h2 class="text-xl font-bold mb-1">Acesso Rápido</h2>
-      <p class="text-blue-300 text-sm mb-5">Clique em um perfil para preencher as credenciais e explorar o sistema.</p>
+    <!-- Informações e Acesso Rápido -->
+    <div class="text-white order-1 md:order-2 space-y-5">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold uppercase tracking-wider mb-3">
+          <i class="fa-brands fa-google text-blue-400"></i> Autenticação Integrada
+        </div>
+        <h2 class="text-3xl font-extrabold tracking-tight text-white mb-2">Painel de Gestão e Acompanhamento</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          O sistema foi configurado para que <strong>todos os usuários autenticados possuam perfil de Administrador</strong>, permitindo visualizar, criar e gerenciar todas as equipes, produtos, vendas, custos e relatórios.
+        </p>
+      </div>
 
-      <div class="space-y-2.5">
-        <button type="button" class="demo-btn w-full text-left p-3.5 rounded-xl transition-all border flex items-center gap-3 group"
-          style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.15);"
-          data-email="admin@escola.edu" data-password="admin123">
-          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(239,68,68,0.2)">
-            <i class="fa-solid fa-user-shield" style="color:#fca5a5"></i>
+      <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/15 space-y-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-blue-200 flex items-center gap-2">
+          <i class="fa-solid fa-bolt text-amber-400"></i> Perfis Pré-configurados (Todos com acesso ADM)
+        </h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <button type="button" class="demo-btn text-left p-3 rounded-xl transition-all border flex items-center gap-3 bg-white/5 hover:bg-white/15 border-white/10"
+            data-email="admin@escola.edu" data-password="admin123" data-name="Ana Administradora">
+            <div class="w-8 h-8 rounded-lg bg-red-500/30 flex items-center justify-center flex-shrink-0 text-red-300 font-bold text-xs">
+              <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="font-bold text-xs text-white truncate">Ana Administradora</div>
+              <div class="text-[10px] text-blue-200 truncate">admin@escola.edu</div>
+            </div>
+          </button>
+
+          <button type="button" class="demo-btn text-left p-3 rounded-xl transition-all border flex items-center gap-3 bg-white/5 hover:bg-white/15 border-white/10"
+            data-email="prof@escola.edu" data-password="prof123" data-name="Prof. Carlos Mendes">
+            <div class="w-8 h-8 rounded-lg bg-blue-500/30 flex items-center justify-center flex-shrink-0 text-blue-300 font-bold text-xs">
+              <i class="fa-solid fa-chalkboard-user"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="font-bold text-xs text-white truncate">Prof. Carlos Mendes</div>
+              <div class="text-[10px] text-blue-200 truncate">prof@escola.edu</div>
+            </div>
+          </button>
+
+          <button type="button" class="demo-btn text-left p-3 rounded-xl transition-all border flex items-center gap-3 bg-white/5 hover:bg-white/15 border-white/10"
+            data-email="ecos@escola.edu" data-password="est123" data-name="Beatriz Oliveira">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/30 flex items-center justify-center flex-shrink-0 text-emerald-300 font-bold text-xs">
+              <i class="fa-solid fa-leaf"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="font-bold text-xs text-white truncate">Beatriz (Eco Bags)</div>
+              <div class="text-[10px] text-blue-200 truncate">ecos@escola.edu</div>
+            </div>
+          </button>
+
+          <button type="button" class="demo-btn text-left p-3 rounded-xl transition-all border flex items-center gap-3 bg-white/5 hover:bg-white/15 border-white/10"
+            data-email="horta@escola.edu" data-password="est123" data-name="Diego Ferreira">
+            <div class="w-8 h-8 rounded-lg bg-amber-500/30 flex items-center justify-center flex-shrink-0 text-amber-300 font-bold text-xs">
+              <i class="fa-solid fa-seedling"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="font-bold text-xs text-white truncate">Diego (Horta)</div>
+              <div class="text-[10px] text-blue-200 truncate">horta@escola.edu</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal seletor do Google -->
+  <div id="google-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border border-gray-100 animate-fadeIn">
+      <div class="text-center mb-5">
+        <div class="inline-flex p-3 rounded-full bg-gray-50 mb-2">
+          <svg class="w-8 h-8" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-gray-800">Fazer login com o Google</h3>
+        <p class="text-xs text-gray-500">Escolha uma conta para continuar no CRM Escolar</p>
+      </div>
+
+      <div class="space-y-2 mb-4">
+        <button type="button" class="google-acc-btn w-full p-3 rounded-2xl border border-gray-200 hover:bg-blue-50/50 hover:border-blue-300 transition-all flex items-center gap-3 text-left group"
+          data-email="admin@gmail.com" data-name="Administrador Google">
+          <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">G</div>
+          <div class="min-w-0 flex-1">
+            <div class="text-sm font-bold text-gray-800">Administrador Google</div>
+            <div class="text-xs text-gray-500 truncate">admin@gmail.com</div>
           </div>
-          <div class="flex-1 text-left">
-            <div class="font-semibold text-sm">Ana Administradora</div>
-            <div class="text-xs" style="color:#93c5fd">admin@escola.edu • Acesso total</div>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs" style="color:#93c5fd"></i>
+          <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-blue-500 text-xs"></i>
         </button>
 
-        <button type="button" class="demo-btn w-full text-left p-3.5 rounded-xl transition-all border flex items-center gap-3 group"
-          style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.15);"
-          data-email="prof@escola.edu" data-password="prof123">
-          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(59,130,246,0.2)">
-            <i class="fa-solid fa-chalkboard-user" style="color:#93c5fd"></i>
+        <button type="button" class="google-acc-btn w-full p-3 rounded-2xl border border-gray-200 hover:bg-blue-50/50 hover:border-blue-300 transition-all flex items-center gap-3 text-left group"
+          data-email="thamyoliveira@gmail.com" data-name="Thamy Oliveira">
+          <div class="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-sm">T</div>
+          <div class="min-w-0 flex-1">
+            <div class="text-sm font-bold text-gray-800">Thamy Oliveira</div>
+            <div class="text-xs text-gray-500 truncate">thamyoliveira@gmail.com</div>
           </div>
-          <div class="flex-1 text-left">
-            <div class="font-semibold text-sm">Prof. Carlos Mendes</div>
-            <div class="text-xs" style="color:#93c5fd">prof@escola.edu • Professor</div>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs" style="color:#93c5fd"></i>
-        </button>
-
-        <button type="button" class="demo-btn w-full text-left p-3.5 rounded-xl transition-all border flex items-center gap-3 group"
-          style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.15);"
-          data-email="ecos@escola.edu" data-password="est123">
-          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(34,197,94,0.2)">
-            <i class="fa-solid fa-leaf" style="color:#86efac"></i>
-          </div>
-          <div class="flex-1 text-left">
-            <div class="font-semibold text-sm">Beatriz Oliveira</div>
-            <div class="text-xs" style="color:#93c5fd">ecos@escola.edu • Estudante — Eco Bags</div>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs" style="color:#93c5fd"></i>
-        </button>
-
-        <button type="button" class="demo-btn w-full text-left p-3.5 rounded-xl transition-all border flex items-center gap-3 group"
-          style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.15);"
-          data-email="horta@escola.edu" data-password="est123">
-          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(234,179,8,0.2)">
-            <i class="fa-solid fa-seedling" style="color:#fde68a"></i>
-          </div>
-          <div class="flex-1 text-left">
-            <div class="font-semibold text-sm">Diego Ferreira</div>
-            <div class="text-xs" style="color:#93c5fd">horta@escola.edu • Estudante — Sabor da Horta</div>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs" style="color:#93c5fd"></i>
-        </button>
-
-        <button type="button" class="demo-btn w-full text-left p-3.5 rounded-xl transition-all border flex items-center gap-3 group"
-          style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.15);"
-          data-email="consulta@escola.edu" data-password="cons123">
-          <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(168,85,247,0.2)">
-            <i class="fa-solid fa-eye" style="color:#d8b4fe"></i>
-          </div>
-          <div class="flex-1 text-left">
-            <div class="font-semibold text-sm">Fernanda Consulta</div>
-            <div class="text-xs" style="color:#93c5fd">consulta@escola.edu • Somente leitura</div>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs" style="color:#93c5fd"></i>
+          <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-blue-500 text-xs"></i>
         </button>
       </div>
 
-      <p class="mt-4 text-xs text-center" style="color:#93c5fd">
-        <i class="fa-solid fa-shield-halved mr-1"></i>
-        Dados de demonstração. Nenhuma informação real é armazenada.
-      </p>
+      <!-- Ou digite seu e-mail do Google -->
+      <form id="google-custom-form" class="space-y-3 pt-2 border-t border-gray-100">
+        <div>
+          <label class="block text-xs font-semibold text-gray-600 mb-1">Ou use outra conta Google:</label>
+          <input type="email" id="google-custom-email" placeholder="seu.nome@gmail.com"
+            class="w-full border rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+        <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-2.5 rounded-xl transition-colors">
+          Continuar com este e-mail
+        </button>
+      </form>
+
+      <div class="mt-4 text-center">
+        <button type="button" id="close-google-modal" class="text-xs text-gray-400 hover:text-gray-600">Cancelar</button>
+      </div>
     </div>
   </div>
 
   <script type="module">
     import { auth } from './db.js';
+    import { loginWithGoogle } from './auth.js';
 
-    // Verificar sessão já existente
+    // Verificar sessão existente
     try {
       const { data } = auth.getSession();
       if (data && data.session) window.location.href = 'app.html';
@@ -168,13 +235,51 @@
     const loginIcon  = document.getElementById('login-icon');
     const loginText  = document.getElementById('login-text');
 
+    // Google Modal
+    const googleModal = document.getElementById('google-modal');
+    const btnGoogleLogin = document.getElementById('btn-google-login');
+    const closeGoogleModal = document.getElementById('close-google-modal');
+
+    btnGoogleLogin.addEventListener('click', () => {
+      googleModal.classList.remove('hidden');
+    });
+
+    closeGoogleModal.addEventListener('click', () => {
+      googleModal.classList.add('hidden');
+    });
+
+    async function handleGoogleAuth(email, name) {
+      try {
+        await loginWithGoogle({ email, nome: name });
+        window.location.href = 'app.html';
+      } catch(err) {
+        alert('Erro ao autenticar com Google: ' + err.message);
+      }
+    }
+
+    document.querySelectorAll('.google-acc-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const email = btn.dataset.email;
+        const name = btn.dataset.name;
+        handleGoogleAuth(email, name);
+      });
+    });
+
+    document.getElementById('google-custom-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('google-custom-email').value.trim();
+      if (email) {
+        handleGoogleAuth(email, email.split('@')[0]);
+      }
+    });
+
+    // Preencher credenciais demo
     document.querySelectorAll('.demo-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         emailEl.value = btn.dataset.email;
         passwordEl.value = btn.dataset.password;
         errorDiv.classList.add('hidden');
-        btn.style.background = 'rgba(255,255,255,0.25)';
-        setTimeout(() => btn.style.background = 'rgba(255,255,255,0.1)', 400);
+        emailEl.focus();
       });
     });
 
@@ -196,7 +301,6 @@
         if (error) {
           errorText.textContent = error.message || 'E-mail ou senha incorretos.';
           errorDiv.classList.remove('hidden');
-          errorDiv.scrollIntoView({ behavior: 'smooth' });
         } else {
           window.location.href = 'app.html';
         }
@@ -206,9 +310,10 @@
       } finally {
         btnLogin.disabled = false;
         loginIcon.className = 'fa-solid fa-right-to-bracket';
-        loginText.textContent = 'Entrar';
+        loginText.textContent = 'Entrar como Administrador';
       }
     });
   </script>
 </body>
 </html>
+
