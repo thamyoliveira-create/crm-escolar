@@ -1,21 +1,26 @@
 /* Variáveis */
 :root {
-  --primary: #1e3a5f;
-  --primary-dark: #162c4a;
-  --primary-light: #2a4f7a;
-  --secondary: #2563eb;
+  --primary: #0b1119;
+  --primary-dark: #06121c;
+  --primary-light: #162b3a;
+  --secondary: #2f9bd8;
   --success: #16a34a;
   --warning: #d97706;
   --warning-dark: #92400e;
   --danger: #dc2626;
   --info: #0891b2;
-  --bg: #f8fafc;
+  --bg: #f4f7f9;
   --surface: #ffffff;
-  --text: #1e293b;
-  --text-muted: #64748b;
-  --border: #e2e8f0;
-  --radius: 0.5rem;
+  --text: #0b1119;
+  --text-muted: #5f7180;
+  --border: #d7e1e8;
+  --radius: 0.55rem;
+  --font-heading: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Karla", "Segoe UI", Arial, sans-serif;
 }
+
+body { font-family: var(--font-body); color: var(--text); }
+h1, h2, h3, h4, h5, h6, button, .brand-title { font-family: var(--font-heading); }
 
 /* Sidebar */
 .sidebar { background-color: var(--primary); color: white; }
@@ -107,7 +112,7 @@ table.crm-table th { background: #f8fafc; font-weight: 600; color: var(--text-mu
   color: white;
 }
 .nav-link.active {
-  background: #2563eb;
+  background: var(--secondary);
   color: white;
   font-weight: 600;
 }
@@ -193,8 +198,8 @@ table.crm-table th { background: #f8fafc; font-weight: 600; color: var(--text-mu
 .fab:hover { transform: scale(1.05); }
 
 /* Accessibility: focus visible */
-:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
-button:focus-visible, a:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--secondary); outline-offset: 2px; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--secondary); outline-offset: 2px; }
 
 /* Demo banner */
 .demo-banner { background: linear-gradient(90deg, #d97706, #b45309); color: white; text-align: center; padding: 0.4rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; }
