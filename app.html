@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CRM Escolar</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0A0E0F">
+  <meta name="theme-color" content="#1A0F1C">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Supabase JS CDN -->
@@ -20,19 +22,19 @@
   <!-- CSS customizado -->
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-slate-50 text-slate-800" style="font-family: system-ui, -apple-system, sans-serif;">
+<body class="bg-slate-50 text-slate-800">
 
   <div class="flex h-screen w-full overflow-hidden">
 
     <!-- ====== SIDEBAR ====== -->
     <aside id="sidebar"
       class="w-64 h-full flex flex-col z-30 fixed md:static transition-transform duration-300 ease-in-out"
-      style="background-color:#1e3a5f; transform: translateX(-100%); min-height: 100vh;">
+      style="background-color:#1A0F1C; transform: translateX(-100%); min-height: 100vh;">
 
       <!-- Logo -->
       <div class="flex items-center justify-between px-4 py-4 border-b" style="border-color:rgba(255,255,255,0.1)">
         <div class="flex items-center gap-2.5">
-          <i class="fa-solid fa-school text-xl text-white"></i>
+          <img src="marca-animada.svg" width="30" height="30" alt="">
           <span class="text-white font-bold text-lg">CRM Escolar</span>
         </div>
         <button id="close-sidebar" class="md:hidden text-gray-300 hover:text-white p-1" aria-label="Fechar menu">
