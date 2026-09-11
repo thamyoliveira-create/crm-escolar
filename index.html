@@ -6,28 +6,29 @@
   <meta name="description" content="CRM Escolar - Sistema de Gestão de Projetos Multidisciplinares">
   <title>CRM Escolar — Login</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0A0E0F">
+  <meta name="theme-color" content="#1A0F1C">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="styles.css">
   <script>
     tailwind.config = { theme: { extend: { colors: {
-      primary: { DEFAULT: '#2f9bd8', dark: '#176f9f', light: '#5bb7e8' },
+      primary: { DEFAULT: '#03E39D', dark: '#00C286', light: '#6BF0C6' },
     }}}}
   </script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 flex items-center justify-center p-4">
+<body class="min-h-screen flex items-center justify-center p-4" style="background:radial-gradient(circle at 15% 10%,rgba(3,227,157,.18),transparent 35%),radial-gradient(circle at 85% 90%,rgba(251,88,167,.18),transparent 38%),#1A0F1C">
   <div class="w-full max-w-5xl grid md:grid-cols-2 gap-8 items-center">
 
     <!-- Card de Login -->
     <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-auto order-2 md:order-1 border border-slate-100">
       <div class="text-center mb-6">
         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-3 shadow-sm" style="background:#e8eef7">
-          <i class="fa-solid fa-school text-3xl" style="color:#1e3a5f"></i>
+          <img src="marca-animada.svg" width="64" height="64" alt="">
         </div>
         <h1 class="text-2xl font-black text-gray-900 tracking-tight">CRM Escolar</h1>
         <p class="text-xs text-gray-500 mt-1">Gestão de Projetos Multidisciplinares</p>
