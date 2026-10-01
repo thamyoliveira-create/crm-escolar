@@ -201,7 +201,7 @@ function setupDragAndDrop() {
         const client = kanbanClients.find(c => c.id === clientId);
         if (client) {
           client.etapa_comercial = newStage;
-          await db.from('clientes').eq('id', clientId).update({ etapa_comercial: newStage });
+          await db.from('clientes').update({ etapa_comercial: newStage }).eq('id', clientId);
           showToast(`Cliente movido para "${getStageLabel(newStage)}"`, 'success');
         }
       }

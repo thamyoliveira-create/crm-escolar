@@ -3,15 +3,33 @@
 
 let _cachedConfig = null;
 
+function isValidSupabaseUrl(url) {
+  if (!url || typeof url !== 'string') return false;
+  const trimmed = url.trim();
+  if (!trimmed.startsWith('https://')) return false;
+  if (trimmed.includes('SEU-PROJETO') ||
+      trimmed.includes('your-project') ||
+      trimmed.includes('fubhsnsseanesejwuzke') ||
+      trimmed.includes('example.supabase.co')) {
+    return false;
+  }
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.hostname.endsWith('.supabase.co') || parsed.hostname.includes('supabase');
+  } catch (e) {
+    return false;
+  }
+}
+
 export async function getAppConfig() {
   if (_cachedConfig) return _cachedConfig;
 
   // 1. Verificar se window.__ENV__ ou variáveis globais já foram injetadas
   const globalEnv = window.__ENV__ || {};
-  const globalUrl = globalEnv.SUPABASE_URL || window.SUPABASE_URL || '';
-  const globalKey = globalEnv.SUPABASE_ANON_KEY || window.SUPABASE_KEY || window.SUPABASE_ANON_KEY || '';
+  const globalUrl = (globalEnv.SUPABASE_URL || window.SUPABASE_URL || '').trim();
+  const globalKey = (globalEnv.SUPABASE_ANON_KEY || window.SUPABASE_KEY || window.SUPABASE_ANON_KEY || '').trim();
 
-  if (globalUrl && globalKey) {
+  if (isValidSupabaseUrl(globalUrl) && globalKey && !globalKey.includes('sua-chave')) {
     _cachedConfig = {
       supabaseUrl: globalUrl,
       supabaseAnonKey: globalKey,
@@ -25,7 +43,7 @@ export async function getAppConfig() {
     const res = await fetch('/api/config');
     if (res.ok) {
       const data = await res.json();
-      if (data.supabaseUrl && data.supabaseAnonKey) {
+      if (isValidSupabaseUrl(data.supabaseUrl) && data.supabaseAnonKey && !data.supabaseAnonKey.includes('sua-chave')) {
         _cachedConfig = {
           supabaseUrl: data.supabaseUrl,
           supabaseAnonKey: data.supabaseAnonKey,

@@ -7,7 +7,7 @@ let _currentAuth = mockAuth;
 let _isRealSupabase = false;
 let _initPromise = null;
 
-// Inicializa a conexão com o Supabase real se configurado
+// Inicializa a conexão com o Supabase real se configurado e acessível
 export async function initDatabase() {
   if (_initPromise) return _initPromise;
 
@@ -17,19 +17,33 @@ export async function initDatabase() {
       if (config.isRealSupabase && config.supabaseUrl && config.supabaseAnonKey) {
         const { createClient } = window.supabase || {};
         if (typeof createClient === 'function') {
-          const client = createClient(config.supabaseUrl, config.supabaseAnonKey, {
-            auth: {
-              persistSession: true,
-              autoRefreshToken: true,
-              detectSessionInUrl: true,
-              storage: window.localStorage
-            }
-          });
-          _currentDb = client;
-          _currentAuth = client.auth;
-          _isRealSupabase = true;
-          console.info('⚡ [CRM Escolar] Conectado ao Supabase Real:', config.supabaseUrl);
-          return { db: _currentDb, auth: _currentAuth, isRealSupabase: true };
+          // Testar se o host é alcançável (evita travar com DNS inexistente ou erro de digitação)
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            await fetch(`${config.supabaseUrl}/rest/v1/`, {
+              method: 'GET',
+              mode: 'no-cors',
+              signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
+            const client = createClient(config.supabaseUrl, config.supabaseAnonKey, {
+              auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true,
+                storage: window.localStorage
+              }
+            });
+            _currentDb = client;
+            _currentAuth = client.auth;
+            _isRealSupabase = true;
+            console.info('⚡ [CRM Escolar] Conectado ao Supabase Real:', config.supabaseUrl);
+            return { db: _currentDb, auth: _currentAuth, isRealSupabase: true };
+          } catch (pingErr) {
+            console.warn('⚠️ [CRM Escolar] Host do Supabase inacessível ou incorreto. Alternando para modo local:', pingErr);
+          }
         }
       }
     } catch (err) {

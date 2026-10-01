@@ -290,28 +290,32 @@ async function updateDashboard() {
     });
 
     let faturamentoBruto = 0;
-    if (todosItens) {
-      todosItens.forEach(item => {
-        if (vendasValidasIds.includes(item.venda_id)) {
-          faturamentoBruto += Number(item.subtotal) || 0;
-        }
-      });
-    }
-
+    let faturamentoLiquido = 0;
     let descontos = 0;
+
     vendas.forEach(v => {
       if (v.situacao !== 'cancelada') {
-        descontos += Number(v.desconto) || 0;
+        const brut = Number(v.valor_total) || 0;
+        const desc = Number(v.desconto) || 0;
+        const liq = Number(v.valor_liquido) || Math.max(0, brut - desc);
+        faturamentoBruto += brut || liq;
+        descontos += desc;
+        faturamentoLiquido += liq;
       }
     });
 
-    const faturamentoLiquido = Math.max(0, faturamentoBruto - descontos);
-
     let recebido = 0;
-    if (todosRecebimentos) {
+    if (todosRecebimentos && todosRecebimentos.length > 0) {
       todosRecebimentos.forEach(r => {
-        if (vendasValidasIds.includes(r.venda_id)) {
+        if (!r.venda_id || vendasValidasIds.includes(r.venda_id)) {
           recebido += Number(r.valor) || 0;
+        }
+      });
+    } else {
+      // Se não houver tabela de recebimentos avulsos, calcular pelas vendas pagas
+      vendas.forEach(v => {
+        if (v.status === 'paga' || v.situacao === 'paga') {
+          recebido += Number(v.valor_liquido || v.valor_total) || 0;
         }
       });
     }

@@ -88,28 +88,38 @@ export async function render(container) {
 
 async function loadData() {
     try {
-        const recebimentos = (await db.from('recebimentos').select('*, vendas(numero, cliente_nome)')) || [];
-        const custos = (await db.from('custos').select('*').eq('status', 'pago')) || [];
+        const { data: recebimentosData } = await db.from('recebimentos').select('*');
+        const { data: custosData } = await db.from('custos').select('*');
+        const { data: vendasData } = await db.from('vendas').select('*');
+
+        const recebimentos = recebimentosData || [];
+        const custos = (custosData || []).filter(c => c.situacao === 'pago' || c.status === 'pago');
+        const vendas = vendasData || [];
 
         let movimentacoes = [];
 
         recebimentos.forEach(r => {
+            const venda = vendas.find(v => v.id === r.venda_id);
+            const num = venda ? venda.numero : (r.venda_id || 'Avulso');
+            const cli = r.cliente_nome || (venda ? venda.cliente_nome : '');
             movimentacoes.push({
-                data: r.data,
-                descricao: \`Recebimento - Venda #\${r.vendas?.numero || r.venda_id} (\${r.vendas?.cliente_nome || ''})\`,
-                categoria: 'Vendas',
+                data: r.data || (r.criado_em ? r.criado_em.split('T')[0] : new Date().toISOString().split('T')[0]),
+                descricao: `Recebimento - Venda ${num}${cli ? ' (' + cli + ')' : ''}`,
+                categoria: 'Vendas & Receitas',
                 tipo: 'entrada',
-                valor: r.valor
+                valor: Number(r.valor) || 0
             });
         });
 
         custos.forEach(c => {
+            const dataCusto = c.data_pagamento || c.data || c.data_vencimento || (c.criado_em ? c.criado_em.split('T')[0] : new Date().toISOString().split('T')[0]);
+            const totalCusto = Number(c.total) || ((Number(c.valor) || 0) * (Number(c.quantidade) || 1));
             movimentacoes.push({
-                data: c.data_pagamento || c.data_vencimento,
-                descricao: c.descricao,
-                categoria: c.categoria || 'Geral',
+                data: dataCusto,
+                descricao: c.descricao || 'Despesa / Custo',
+                categoria: c.categoria || 'Custos Operacionais',
                 tipo: 'saida',
-                valor: c.valor
+                valor: totalCusto
             });
         });
 
