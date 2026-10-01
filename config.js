@@ -1,5 +1,5 @@
 // config.js — Gerenciador de Configuração do Ambiente do CRM Escolar
-// Lê configurações dinamicamente via /api/config (Vercel) ou window.__ENV__
+// Lê configurações dinamicamente via /api/config (Vercel), window.__ENV__ ou config.local.js
 
 let _cachedConfig = null;
 
@@ -9,7 +9,6 @@ function isValidSupabaseUrl(url) {
   if (!trimmed.startsWith('https://')) return false;
   if (trimmed.includes('SEU-PROJETO') ||
       trimmed.includes('your-project') ||
-      trimmed.includes('fubhsnsseanesejwuzke') ||
       trimmed.includes('example.supabase.co')) {
     return false;
   }
@@ -26,8 +25,8 @@ export async function getAppConfig() {
 
   // 1. Verificar se window.__ENV__ ou variáveis globais já foram injetadas
   const globalEnv = window.__ENV__ || {};
-  const globalUrl = (globalEnv.SUPABASE_URL || window.SUPABASE_URL || '').trim();
-  const globalKey = (globalEnv.SUPABASE_ANON_KEY || window.SUPABASE_KEY || window.SUPABASE_ANON_KEY || '').trim();
+  const globalUrl = (globalEnv.SUPABASE_URL || globalEnv.NEXT_PUBLIC_SUPABASE_URL || window.SUPABASE_URL || '').trim();
+  const globalKey = (globalEnv.SUPABASE_ANON_KEY || globalEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY || globalEnv.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || window.SUPABASE_KEY || window.SUPABASE_ANON_KEY || '').trim();
 
   if (isValidSupabaseUrl(globalUrl) && globalKey && !globalKey.includes('sua-chave')) {
     _cachedConfig = {
