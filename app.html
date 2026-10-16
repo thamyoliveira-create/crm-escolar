@@ -140,17 +140,27 @@
 
       // Atualizar UI com dados do usuário
       const initial = (user.nome || user.email || 'A').charAt(0).toUpperCase();
+      const userRole = user.perfil || user.role || 'estudante';
+
+      const roleLabels = {
+        'administrador': { label: 'ADM', color: 'bg-amber-100 text-amber-800 border-amber-200', icon: 'fa-shield-halved' },
+        'professor': { label: 'PROF', color: 'bg-blue-100 text-blue-800 border-blue-200', icon: 'fa-chalkboard-user' },
+        'estudante': { label: 'ALUNO', color: 'bg-green-100 text-green-800 border-green-200', icon: 'fa-graduation-cap' },
+        'consulta': { label: 'CONSULTA', color: 'bg-gray-100 text-gray-800 border-gray-200', icon: 'fa-eye' }
+      };
+
+      const roleInfo = roleLabels[userRole] || roleLabels['estudante'];
 
       document.getElementById('user-name').textContent = user.nome || user.email;
-      document.getElementById('user-role').innerHTML = 'Administrador';
+      document.getElementById('user-role').innerHTML = userRole.charAt(0).toUpperCase() + userRole.slice(1);
       document.getElementById('user-avatar').textContent = initial;
       document.getElementById('mobile-avatar').textContent = initial;
       document.getElementById('desktop-avatar').textContent = initial;
       document.getElementById('header-user-info').innerHTML = `
         <span class="inline-flex items-center gap-1.5 font-medium">
           ${user.nome || user.email}
-          <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
-            <i class="fa-solid fa-shield-halved text-[10px] mr-0.5"></i> ADM
+          <span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${roleInfo.color} border ${roleInfo.color.replace('bg-', 'border-')}">
+            <i class="fa-solid ${roleInfo.icon} text-[10px] mr-0.5"></i> ${roleInfo.label}
           </span>
         </span>
       `;
@@ -200,8 +210,8 @@
         await logout();
       });
 
-      // Inicializar roteador com acesso de administrador total
-      initRouter('administrador');
+      // Inicializar roteador com o perfil real do usuário
+      initRouter(userRole);
     }
 
     init().catch(err => {

@@ -232,6 +232,12 @@ CREATE TABLE IF NOT EXISTS public.audit_log (
   criado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 10. Tabela de e-mails autorizados (para definir papéis de administradores e professores)
+CREATE TABLE IF NOT EXISTS public.authorized_staff_emails (
+  email TEXT PRIMARY KEY,
+  role VARCHAR(20) NOT NULL CHECK (role IN ('administrador', 'professor'))
+);
+
 -- ==============================================================================
 -- TRIGGERS E FUNÇÕES
 -- ==============================================================================
@@ -240,8 +246,8 @@ CREATE TABLE IF NOT EXISTS public.audit_log (
 CREATE OR REPLACE FUNCTION public.update_atualizado_em_column()
 RETURNS TRIGGER AS $$
 BEGIN
-   NEW.atualizado_em = NOW();
-   RETURN NEW;
+  NEW.atualizado_em = NOW();
+  RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -269,30 +275,39 @@ CREATE TRIGGER update_vendas_modtime BEFORE UPDATE ON public.vendas FOR EACH ROW
 -- Trigger para provisionar perfil de Administrador automaticamente no cadastro
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  v_role VARCHAR(20);
 BEGIN
   INSERT INTO public.profiles (id, user_id, nome, email, perfil, ativo)
   VALUES (
     gen_random_uuid()::text,
     NEW.id,
-    COALESCE(NEW.raw_user_meta_data->>'nome', NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1)),
+    COALESCE(NEW.raw_user_meta_data->>'nome', NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
     NEW.email,
-    'administrador',
+    'administrador',  -- placeholder, will be overridden
     true
   )
   ON CONFLICT (email) DO UPDATE
-  SET user_id = EXCLUDED.user_id;
+  SET user_id = EXCLUDED.user_id
+  RETURNING id, email INTO NEW.id, NEW.email;
+
+  -- Determine role based on email
+  SELECT COALESCE(role, 'estudante') INTO v_role
+  FROM public.authorized_staff_emails
+  WHERE email = NEW.email;
+
+  UPDATE public.profiles
+  SET perfil = v_role
+  WHERE id = NEW.id;
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
 -- ==============================================================================
 -- ROW LEVEL SECURITY (RLS) — Acesso Seguro com Chave Pública Anon
 -- ==============================================================================
+
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.projetos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.projeto_professores ENABLE ROW LEVEL SECURITY;
@@ -310,6 +325,7 @@ ALTER TABLE public.vendas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.itens_venda ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.recebimentos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.registros_pedagogicos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_log ENABLE ROW LEVEL SECURITY;
 
 -- Políticas universais de leitura e gravação para a aplicação
 DO $$
@@ -320,7 +336,8 @@ DECLARE
     'equipes', 'equipe_membros', 'clientes', 'historico_contatos',
     'categorias_produto', 'produtos', 'movimentacoes_estoque',
     'categorias_custo', 'custos', 'vendas', 'itens_venda',
-    'recebimentos', 'registros_pedagogicos'
+    'recebimentos', 'registros_pedagogicos',
+    'authorized_staff_emails'
   ];
 BEGIN
   FOREACH t IN ARRAY tables LOOP
@@ -332,6 +349,7 @@ END $$;
 -- ==============================================================================
 -- CATEGORIAS PADRÃO
 -- ==============================================================================
+
 INSERT INTO public.categorias_produto (id, nome, descricao) VALUES
   ('ctp-0001', 'Produtos Gerais', 'Itens produzidos ou comercializados'),
   ('ctp-0002', 'Serviços', 'Serviços prestados')

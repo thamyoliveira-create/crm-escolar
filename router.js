@@ -17,7 +17,7 @@ export const routes = {
   '/configuracoes':   { title: 'Configurações',       page: 'pages/configuracoes.js',    icon: 'fa-gear',               group: 'ADMIN',       roles: ['administrador'] },
 };
 
-let currentRole = 'administrador';
+let currentRole = 'estudante';
 let currentCleanup = null;
 
 function canAccess(routePath, role) {

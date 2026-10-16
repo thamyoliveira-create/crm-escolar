@@ -560,21 +560,42 @@ export const supabaseMock = {
   getData(t) { return getDb()[t] || []; },
 };
 
+const STAFF_EMAILS = {
+  'tamiris@escola.edu': 'administrador',
+  'thamyoliveira0@gmail.com': 'administrador',
+  'carlos.eduardo@escola.edu': 'professor'
+};
+
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+
+function roleForEmail(email) {
+  return STAFF_EMAILS[normalizeEmail(email)] || 'estudante';
+}
+
+function normalizeProfile(profile) {
+  const email = normalizeEmail(profile.email);
+  const perfil = profile.perfil || profile.role || roleForEmail(email);
+  return { ...profile, email, perfil, role: perfil };
+}
+
 export const supabaseAuth = {
   signInWithOAuth: async ({ provider, options = {} }) => {
     const db = getDb();
-    const email = options.email || (options.data && options.data.email) || 'usuario.google@escola.edu';
+    const email = normalizeEmail(options.email || (options.data && options.data.email) || 'usuario.google@escola.edu');
     const nome = options.nome || (options.data && options.data.full_name) || (options.data && options.data.name) || email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     const avatar_url = options.avatar_url || (options.data && options.data.avatar_url) || null;
 
-    let profile = (db.profiles || []).find(p => p.email.toLowerCase() === email.toLowerCase());
+    let profile = (db.profiles || []).find(p => normalizeEmail(p.email) === email);
 
     if (!profile) {
       profile = {
         id: 'usr-goo-' + Date.now().toString(36),
-        nome: nome || 'Administrador Google',
+        nome: nome || 'Usuário Google',
         email: email,
-        perfil: 'administrador',
+        perfil: roleForEmail(email),
+        role: roleForEmail(email),
         avatar_url: avatar_url,
         ativo: true,
         provider: 'google',
@@ -584,8 +605,7 @@ export const supabaseAuth = {
       db.profiles.push(profile);
       persist();
     } else {
-      // Garantir que todos são administrador
-      profile.perfil = 'administrador';
+      profile = normalizeProfile(profile);
       if (avatar_url) profile.avatar_url = avatar_url;
       profile.provider = 'google';
       persist();
@@ -608,17 +628,18 @@ export const supabaseAuth = {
   },
 
   signInWithPassword: async ({ email, password }) => {
-    const u = USERS[email];
+    const normalizedEmail = normalizeEmail(email);
+    const u = USERS[email] || USERS[normalizedEmail];
     const db = getDb();
-    let profile = (db.profiles || []).find(p => p.email.toLowerCase() === email.toLowerCase());
+    let profile = (db.profiles || []).find(p => normalizeEmail(p.email) === normalizedEmail);
 
     if (!profile && (!u || u.password !== password)) {
-      // Se for uma conta não pré-cadastrada no demo, cria automaticamente com privilégios de Administrador
       profile = {
         id: 'usr-' + Date.now().toString(36),
-        nome: email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-        email: email,
-        perfil: 'administrador',
+        nome: normalizedEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        email: normalizedEmail,
+        perfil: roleForEmail(normalizedEmail),
+        role: roleForEmail(normalizedEmail),
         ativo: true,
         criado_em: new Date().toISOString()
       };
@@ -633,8 +654,7 @@ export const supabaseAuth = {
       return { data: null, error: { message: 'Usuário inativo ou não encontrado.' } };
     }
 
-    // Todos são Administrador
-    profile.perfil = 'administrador';
+    profile = normalizeProfile(profile);
 
     const session = {
       user: { id: profile.id, email: profile.email },
@@ -663,9 +683,7 @@ export const supabaseAuth = {
         localStorage.removeItem('crm_session');
         return { data: { session: null }, error: null };
       }
-      if (session.profile) {
-        session.profile.perfil = 'administrador'; // Enforce admin
-      }
+      if (session.profile) session.profile = normalizeProfile(session.profile);
       return { data: { session }, error: null };
     } catch(e) {
       return { data: { session: null }, error: null };
@@ -676,9 +694,7 @@ export const supabaseAuth = {
     try {
       const p = localStorage.getItem('user_profile');
       if (!p) return { data: { user: null }, error: null };
-      const profile = JSON.parse(p);
-      profile.perfil = 'administrador'; // Enforce admin
-      return { data: { user: profile }, error: null };
+      return { data: { user: normalizeProfile(JSON.parse(p)) }, error: null };
     } catch(e) {
       return { data: { user: null }, error: null };
     }
